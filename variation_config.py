@@ -72,7 +72,7 @@ def make_variation_config(nominal_template, variation, year, period, single):
             "EXTRA_GLOBAL_CUTS_HERE\n",
             "GlobalCut int PV_n >= 19\n")
     elif variation == "ptdw":
-        lines = var_file_text.splitlines()
+        lines = var_file_text.splitlines(keepends=True)
         new_lines = []
         for line in lines:
             new_lines.append(line)
@@ -84,13 +84,13 @@ def make_variation_config(nominal_template, variation, year, period, single):
             "EXTRA_GLOBAL_CUTS_HERE\n",
             "")
     elif variation == "ptup":
-        lines = var_file_text.splitlines()
+        lines = var_file_text.splitlines(keepends=True)
         new_lines = []
         for line in lines:
             if "ProbeCut floatGeV probe_pt >" in line:
                 line_pt, new_pt = new_pt_from_cut_line(
                     single, line, return_original=True)
-                new_lines.append(line.replace(line_pt, f"{new_pt:.1f}"))
+                new_lines.append(line.replace(line_pt, f"{new_pt:.1f}\n"))
             else:
                 new_lines.append(line)
 
@@ -98,12 +98,10 @@ def make_variation_config(nominal_template, variation, year, period, single):
             "EXTRA_GLOBAL_CUTS_HERE\n",
             "")
         var_file_text = var_file_text.replace(
-            "EXTRA_GLOBAL_CUTS_HERE\n",
-            "").replace(
-                "ProbeCut floatGeV probe_pt > 27.3",
-                "ProbeCut floatGeV probe_pt > 40.0").replace(
-                    "ProbeCut floatGeV probe_pt > 52.5",
-                    "ProbeCut floatGeV probe_pt > 70.0")
+            "ProbeCut floatGeV probe_pt > 27.3",
+            "ProbeCut floatGeV probe_pt > 40.0").replace(
+                "ProbeCut floatGeV probe_pt > 52.5",
+                "ProbeCut floatGeV probe_pt > 70.0")
     else:
         raise ValueError(f"Variation {variation} unaccounted for!")
 

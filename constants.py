@@ -23,10 +23,10 @@ SM_BASIC_CONFIG_TEMPLATE = "templates/SM_BasicConfigZMuon.conf"
 SM_NOMINAL_CONFIG_TEMPLATE = "templates/SM_nominal_template.conf"
 SM_PRE_NOMINAL_CONFIG_TEMPLATE = "templates/SM_pre_nominal_template.conf"
 SM_MATCHES_TEMPLATE = "templates/SM_MatchesForZmumuMuon.conf"
-ML_BASIC_CONFIG_TEMPLATE = "templates/DL_BasicConfigZMuon.conf"
-ML_NOMINAL_CONFIG_TEMPLATE = "templates/DL_nominal_template.conf"
-ML_PRE_NOMINAL_CONFIG_TEMPLATE = "templates/DL_pre_nominal_template.conf"
-ML_MATCHES_TEMPLATE = "templates/DL_MatchesForZmumuMuon.conf"
+ML_BASIC_CONFIG_TEMPLATE = "templates/ML_BasicConfigZMuon.conf"
+ML_NOMINAL_CONFIG_TEMPLATE = "templates/ML_nominal_template.conf"
+ML_PRE_NOMINAL_CONFIG_TEMPLATE = "templates/ML_pre_nominal_template.conf"
+ML_MATCHES_TEMPLATE = "templates/ML_MatchesForZmumuMuon.conf"
 
 # spots to store output files, relative to top
 DETECTOR_REGIONS_SAVE_PATH = os.path.join(

@@ -1,5 +1,5 @@
 from triggers import get_matches_text
-from constants import SM_MATCHES_TEMPLATE, ML_BASIC_CONFIG_TEMPLATE,\
+from constants import ML_MATCHES_TEMPLATE, SM_MATCHES_TEMPLATE,\
     SM_MATCHES_CONFIG_PATH_FMT, ML_MATCHES_CONFIG_PATH_FMT
 
 def make_match_configs(year, period, single):
@@ -7,7 +7,7 @@ def make_match_configs(year, period, single):
     if single:
         matches_template_path = SM_MATCHES_TEMPLATE
     else:
-        matches_template_path = ML_BASIC_CONFIG_TEMPLATE
+        matches_template_path = ML_MATCHES_TEMPLATE
 
     # get template file text
     with open(matches_template_path, "r", encoding="utf-8") as matches_file:

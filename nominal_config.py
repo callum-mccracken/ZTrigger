@@ -71,7 +71,7 @@ def make_selection_blocks(single, year, period):
                 trigger=trigger,
                 pt_cutoff=pt_cut,
                 detector_regions=" ".join(DETECTOR_REGIONS)))
-    return "\n".join(blocks)
+    return "".join(blocks)
 
 
 def make_nominal_config(single, year, period, basic_filename):

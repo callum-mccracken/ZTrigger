@@ -6,7 +6,6 @@ def create_dirs():
     """Get directories ready for config files."""
     for directory in [SINGLE_MUON_DIR, MULTI_LEG_DIR]:
         if os.path.exists(directory):
-            input(f"Press enter to overwrite {directory} directory")
             shutil.rmtree(directory)
         os.mkdir(directory)
 

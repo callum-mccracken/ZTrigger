@@ -216,6 +216,7 @@ TRIGGERS = {
             "SINGLE": [
                 "HLT_mu26_ivarmedium",
                 "HLT_mu50",
+                # "HLT_mu26_ivarmedium_OR_HLT_mu50",
                 "HLT_mu60_0eta105_msonly"
             ],
             "MULTI": [
@@ -231,7 +232,7 @@ TRIGGERS = {
 trigger_template = """
 New_MatchSelection
     MatchName {trigger_name}
-    Cut float probe_dRMatch_{trigger_name} < 0.1
+    Cut bool probe_matched_{trigger_name} = 1
 End_MatchSelection
 """
 
@@ -239,8 +240,8 @@ comb_trigger_template = """
 New_MatchSelection
     MatchName {trigger_name}
     MatchCombCut OR
-        Cut float probe_dRMatch_{trigger_2} < 0.1
-        Cut float probe_dRMatch_{trigger_1} < 0.1
+        Cut bool probe_matched_{trigger_2} = 1
+        Cut bool probe_matched_{trigger_1} = 1
     End_CombCut
 End_MatchSelection
 """
