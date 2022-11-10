@@ -1,3 +1,4 @@
+"""Module for making the config for nominal variation."""
 import re
 import os
 from constants import WORKING_POINTS, DETECTOR_REGIONS, TOP_LEVEL_DIR,\
@@ -6,7 +7,7 @@ from constants import WORKING_POINTS, DETECTOR_REGIONS, TOP_LEVEL_DIR,\
 from triggers import triggers_in_period
 from run_numbers import RUN_NUMBERS
 
-single_block_template = """
+SINGLE_BLOCK_TEMPLATE = """
 New_TPSelection ZmumuTPMerged OC MuonProbes
     NameProbeSel {working_point}MuonProbes
     ProbeCut bool probe_matched_{working_point}Muons = 1
@@ -15,7 +16,7 @@ New_TPSelection ZmumuTPMerged OC MuonProbes
     DetRegion {detector_regions}
 End_TPSelection
 """
-multi_block_template = """
+MULTI_BLOCK_TEMPLATE = """
 New_TPSelection ZmumuTPMuon OC {working_point}Probes_noProbeIP
     NameProbeSel {working_point}
     ProbeCut bool probe_matched_{working_point} = 1
@@ -47,24 +48,27 @@ def pt_for_cutoff(trigger: str):
         return lowest_pt_from_single_trigger(trigger)
 
 def pt_cutoff(trigger, single):
-    """Get the pt value to use in the cut, a little higher than the trigger."""
-    # TODO: is there a reason these are different?
-    if single:
-        return pt_for_cutoff(trigger) * 1.05
-    else:
-        return pt_for_cutoff(trigger) + 1
+    """
+    Get the pt value to use in the cut, a little higher than the trigger.
+
+    The reason for 2 cases: single-muon turn-on curves are different
+    from multi-leg ones (ask if you don't know what turn-on curves are).
+
+    We want to ensure we're in the flat part of the turn-on curve.
+    """
+    return pt_for_cutoff(trigger)*1.05 if single else pt_for_cutoff(trigger)+1
 
 
-def make_selection_blocks(single, year, period):    
+def make_selection_blocks(single, year, period):
+    """Make the selection blocks for each trigger/WP."""
     blocks = []
-    template = single_block_template if single else multi_block_template
+    template = SINGLE_BLOCK_TEMPLATE if single else MULTI_BLOCK_TEMPLATE
     triggers = triggers_in_period(single, year, period)
     for working_point in WORKING_POINTS:
         for trigger in triggers:
             if "_OR_" in trigger:
                 trigger_1, trigger_2, = trigger.split("_OR_")
                 assert "mu" in trigger_1 and "mu" in trigger_2
-                
             pt_cut = pt_cutoff(trigger, single)
             blocks.append(template.format(
                 working_point=working_point,
@@ -75,6 +79,7 @@ def make_selection_blocks(single, year, period):
 
 
 def make_nominal_config(single, year, period, basic_filename):
+    """Make a nominal config."""
     # get template
     if single:
         pre_nominal_template = SM_PRE_NOMINAL_CONFIG_TEMPLATE

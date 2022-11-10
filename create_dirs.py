@@ -1,3 +1,5 @@
+"""Module with a helper function for making directories."""
+
 import os
 import shutil
 from constants import SINGLE_MUON_DIR, MULTI_LEG_DIR
@@ -8,4 +10,3 @@ def create_dirs():
         if os.path.exists(directory):
             shutil.rmtree(directory)
         os.mkdir(directory)
-

@@ -1,8 +1,17 @@
+"""Module for making matches configs."""
+
 from triggers import get_matches_text
 from constants import ML_MATCHES_TEMPLATE, SM_MATCHES_TEMPLATE,\
     SM_MATCHES_CONFIG_PATH_FMT, ML_MATCHES_CONFIG_PATH_FMT
 
 def make_match_configs(year, period, single):
+    """
+    Make match configs.
+
+    year: str, e.g. 2015
+    period: str, e.g. B
+    single: bool, true for single muon triggers, false for multi-leg
+    """
     # get the right template file
     if single:
         matches_template_path = SM_MATCHES_TEMPLATE

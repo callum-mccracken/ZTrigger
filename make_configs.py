@@ -1,7 +1,7 @@
 """
-A script to show how I made run 2 configs.
+A script to show how I made run2 configs.
 
-Hopefully this will make it a little easier to do run 3 things?
+Hopefully this will make it a little easier to do run3 things?
 """
 import constants
 from nominal_config import make_nominal_config
@@ -30,16 +30,16 @@ for year in constants.YEARS:
             multi_match_config, year, period, single=False)
 
         # make nominal config
-        single_nominal_config = make_nominal_config(
+        SINGLE_NOMINAL_CONFIG = make_nominal_config(
             single=True, year=year, period=period,
             basic_filename=single_basic_filename)
-        multi_nominal_config = make_nominal_config(
+        MULTI_NOMINAL_CONFIG = make_nominal_config(
             single=False, year=year, period=period,
             basic_filename=multi_basic_filename)
 
         for variation in constants.VARIATIONS:
             # make variation file
-            single_var_filename = make_variation_config(
-                single_nominal_config, variation, year, period, single=True)
-            multi_var_filename = make_variation_config(
-                multi_nominal_config, variation, year, period, single=False)
+            make_variation_config(
+                SINGLE_NOMINAL_CONFIG, variation, year, period, single=True)
+            make_variation_config(
+                MULTI_NOMINAL_CONFIG, variation, year, period, single=False)

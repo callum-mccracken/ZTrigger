@@ -84,7 +84,7 @@ TRIGGERS = {
                 "HLT_2mu6_nomucomb_mu4_nomucomb_bTau_L12MU6_3MU4"
             ]
         },
-        "D": {  # TODO I've taken the first part of D so far, what to do later?
+        "D1D3": {  # first part of D = same as B/C
             "SINGLE": [
                 "HLT_mu24_ivarmedium",
                 "HLT_mu24_imedium",
@@ -106,7 +106,21 @@ TRIGGERS = {
                 "HLT_2mu6_nomucomb_mu4_nomucomb_bTau_L12MU6_3MU4"
             ]
         },
-        "E": {  # TODO: did I understand the slash after ivarmedium correctly?
+        "D4D8": {  # the second part of D = same as E
+            "SINGLE": [
+                "HLT_mu24_ivarmedium",
+                "HLT_mu26_ivarmedium",
+                "HLT_mu50"
+            ],
+            "MULTI": [
+                "HLT_2mu14",
+                "HLT_mu20_mu8noL1",
+                "HLT_mu22_mu8noL1",
+                "HLT_mu20_2mu4noL1",
+                "HLT_3mu6_msonly"
+            ]
+        },
+        "E": {  # did I understand the slash after ivarmedium correctly?
             "SINGLE": [
                 "HLT_mu24_ivarmedium",
                 "HLT_mu26_ivarmedium",
@@ -132,7 +146,7 @@ TRIGGERS = {
                 "HLT_3mu6_msonly"
             ]
         },
-        "G": {  # TODO: again so far I've only been using the first half of G
+        "G": {  # only the first half of G
             "SINGLE": [
                 "HLT_mu26_ivarmedium",
                 "HLT_mu50"
@@ -156,7 +170,7 @@ TRIGGERS = {
                 "HLT_3mu6_msonly"
             ]
         },
-        "I": {  # TODO only first half of I
+        "I": {  # only the first half of I
             "SINGLE": [
                 "HLT_mu26_ivarmedium",
                 "HLT_mu50"
@@ -229,14 +243,14 @@ TRIGGERS = {
     }
 }
 
-trigger_template = """
+SINGLE_TRIGGER_TEMPLATE = """
 New_MatchSelection
     MatchName {trigger_name}
     Cut bool probe_matched_{trigger_name} = 1
 End_MatchSelection
 """
 
-comb_trigger_template = """
+OR_TRIGGER_TEMPLATE = """
 New_MatchSelection
     MatchName {trigger_name}
     MatchCombCut OR
@@ -246,15 +260,16 @@ New_MatchSelection
 End_MatchSelection
 """
 
-def triggers_in_period(single, year, period):
+def triggers_in_period(single: bool, year: int, period: str):
+    """Return a list of triggers in a given period"""
     triggers_in_year = TRIGGERS[year]
     if period in triggers_in_year.keys():
-        triggers_in_period = triggers_in_year[period]
+        trigs_in_period = triggers_in_year[period]
     elif "ANY" in triggers_in_year.keys():
-        triggers_in_period = triggers_in_year["ANY"]
+        trigs_in_period = triggers_in_year["ANY"]
     else:
         raise KeyError(period)
-    triggers = triggers_in_period["SINGLE" if single else "MULTI"]
+    triggers = trigs_in_period["SINGLE" if single else "MULTI"]
     return triggers
 
 def get_matches_text(single, year, period):
@@ -264,8 +279,8 @@ def get_matches_text(single, year, period):
     for trigger in triggers:
         if "_OR_" in trigger:
             trigger_1, trigger_2 = trigger.split("_OR_")
-            matches_text += comb_trigger_template.format(
+            matches_text += OR_TRIGGER_TEMPLATE.format(
                 trigger_name=trigger, trigger_1=trigger_1, trigger2=trigger_2)
         else:
-            matches_text += trigger_template.format(trigger_name=trigger)
+            matches_text += SINGLE_TRIGGER_TEMPLATE.format(trigger_name=trigger)
     return matches_text
