@@ -1,8 +1,9 @@
 """
 Module to list run numbers for each period we care about.
 
-The numbers here come from
-[COMA](https://atlas-tagservices.cern.ch/tagservices/RunBrowser/runBrowserReport/rBR_Period_Report.php)
+The numbers here come from COMA:
+atlas-tagservices.cern.ch/
+tagservices/RunBrowser/runBrowserReport/rBR_Period_Report.php
 """
 
 # 2015

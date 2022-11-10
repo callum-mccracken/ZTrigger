@@ -1,3 +1,8 @@
+"""
+Module for storing constants,
+like the list of variation names and template file paths.
+"""
+
 import os
 
 YEARS = [2015, 2016, 2017, 2018]
@@ -6,7 +11,10 @@ VARIATIONS = [
     "nominal", "dphill", "isoTight", "isoTightTrackOnly", "mll",
     "muneg", "mupos", "noIP", "nvtx_dw", "nvtx_up", "ptdw", "ptup"]
 
-WORKING_POINTS = ["Medium", "Loose", "Tight", "HighPt"]
+WORKING_POINTS = [
+    "Medium", "Loose", "Tight", "HighPt",
+    "PflowLoose_VarRad", "PflowTight_VarRad",
+    "Loose_VarRad", "Tight_VarRad"]
 
 DETECTOR_REGIONS = ["All", "noCrack", "Barrel", "Endcap"]
 
@@ -35,13 +43,13 @@ SM_BASIC_CONFIG_PATH_FMT = os.path.join(
     SINGLE_MUON_DIR, "BasicConfigZMuon_{year}_{period}.conf")
 SM_MATCHES_CONFIG_PATH_FMT = os.path.join(
     SINGLE_MUON_DIR, "MatchesForZmumuMuon_{year}_{period}.conf")
-SM_VARIATION_CONFIG_PATH_FMT = os.path.join(
+SM_VAR_CONFIG_PATH_FMT = os.path.join(
     SINGLE_MUON_DIR, "MuonProbes_OC_{variation}_{year}_{period}.conf")
 
 ML_BASIC_CONFIG_PATH_FMT = os.path.join(
     MULTI_LEG_DIR, "BasicConfigZMuon_{year}_{period}.conf")
 ML_MATCHES_CONFIG_PATH_FMT = os.path.join(
     MULTI_LEG_DIR, "MatchesForZmumuMuon_{year}_{period}.conf")
-ML_VARIATION_CONFIG_PATH_FMT = os.path.join(
+ML_VAR_CONFIG_PATH_FMT = os.path.join(
     MULTI_LEG_DIR,
     "MuonProbes_LooseProbes_noProbeIP_{variation}_{year}_{period}.conf")

@@ -1,6 +1,6 @@
 """Module for making systematic variation configs."""
-from constants import SM_VARIATION_CONFIG_PATH_FMT,\
-    ML_VARIATION_CONFIG_PATH_FMT
+from constants import SM_VAR_CONFIG_PATH_FMT,\
+    ML_VAR_CONFIG_PATH_FMT
 
 def new_pt_from_cut_line(single, line: str, return_original=False):
     """Given a cut line, return the new pt, i.e. if """
@@ -18,6 +18,7 @@ def new_pt_from_cut_line(single, line: str, return_original=False):
     if return_original:
         return original_pt, new_pt
     return new_pt
+
 
 def make_variation_config(nominal_template, variation, year, period, single):
     """Make a systematic variation config file."""
@@ -107,10 +108,7 @@ def make_variation_config(nominal_template, variation, year, period, single):
         raise ValueError(f"Variation {variation} unaccounted for!")
 
     # save the file
-    if single:
-        fmt = SM_VARIATION_CONFIG_PATH_FMT
-    else:
-        fmt = ML_VARIATION_CONFIG_PATH_FMT
+    fmt = SM_VAR_CONFIG_PATH_FMT if single else ML_VAR_CONFIG_PATH_FMT
     var_filename = fmt.format(variation=variation, year=year, period=period)
     with open(var_filename, "w", encoding="utf-8") as variation_file:
         variation_file.write(var_file_text)
