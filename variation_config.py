@@ -1,11 +1,11 @@
-import os
-from constants import VARIATIONS, SM_VARIATION_CONFIG_PATH_FMT,\
-    TOP_LEVEL_DIR, ML_VARIATION_CONFIG_PATH_FMT
-from run_numbers import RUN_NUMBERS
+"""Module for making systematic variation configs."""
+from constants import SM_VARIATION_CONFIG_PATH_FMT,\
+    ML_VARIATION_CONFIG_PATH_FMT
 
 def new_pt_from_cut_line(single, line: str, return_original=False):
-    original_pt = line.split("probe_pt >")[-1]
-    pt_num = float(line.split("probe_pt >")[-1])
+    """Given a cut line, return the new pt, i.e. if """
+    original_pt = line.split("probe_pt > ")[-1]
+    pt_num = float(line.split("probe_pt > ")[-1])
     if single:
         if pt_num==27.3:
             new_pt = 40.0
@@ -14,12 +14,13 @@ def new_pt_from_cut_line(single, line: str, return_original=False):
         else:
             new_pt = pt_num + 5  # TODO is this how I should deal with this?
     else:
-        new_pt = pt_num + 5  # TODO: why are these different?
+        new_pt = pt_num + 5  # different bc of single vs multi turn-on curves
     if return_original:
         return original_pt, new_pt
     return new_pt
 
 def make_variation_config(nominal_template, variation, year, period, single):
+    """Make a systematic variation config file."""
     # get template text
     with open(nominal_template, "r", encoding="utf-8") as variation_file:
         var_file_text = variation_file.read()
@@ -113,4 +114,3 @@ def make_variation_config(nominal_template, variation, year, period, single):
     var_filename = fmt.format(variation=variation, year=year, period=period)
     with open(var_filename, "w", encoding="utf-8") as variation_file:
         variation_file.write(var_file_text)
-

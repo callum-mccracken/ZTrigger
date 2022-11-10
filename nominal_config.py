@@ -44,8 +44,8 @@ def pt_for_cutoff(trigger: str):
         pt_1 = lowest_pt_from_single_trigger(trigger_1)
         pt_2 = lowest_pt_from_single_trigger(trigger_2)
         return pt_1 if pt_1 < pt_2 else pt_2
-    else:
-        return lowest_pt_from_single_trigger(trigger)
+
+    return lowest_pt_from_single_trigger(trigger)
 
 def pt_cutoff(trigger, single):
     """

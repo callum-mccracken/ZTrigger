@@ -1,4 +1,44 @@
-TRIGGERS = {
+"""Module storing info about which triggers were used when."""
+import numpy as np
+
+def get_ors(trigger_list):
+    """
+    Return the OR combinations we need to consider.
+
+    THIS IS ONLY TO BE USED WITH SINGLE MUON TRIGGERS,
+    PATTERN MATCHING MAY NOT WORK WITH MULTI-LEG ONES!
+
+    (I assume triggers have names like HLT_muX_Y)
+
+    Example trigger list:
+        ["HLT_mu20_iloose_L1MU15",
+        "HLT_mu40",
+        "HLT_mu60_0eta105_msonly"]
+
+    We also want these:
+    - HLT_mu20_iloose_L1MU15_OR_HLT_mu40
+    - HLT_mu20_iloose_L1MU15_OR_HLT_mu60_0eta105_msonly
+    - HLT_mu40_OR_HLT_mu60_0eta105_msonly
+
+    I.e. take all unique pairings where the lower-pt muon goes first.
+    """
+    def get_pt(trigger_name: str):
+        """Given a single-muon trigger name, return the muon pt."""
+        return int(trigger_name.split("_")[1].replace("mu", ""))
+
+    # sort triggers by pt
+    pt_list = np.array([get_pt(trig) for trig in trigger_list])
+    pt_order = np.argsort(pt_list)
+    triggers_pt_sorted = np.array(trigger_list)[pt_order]
+
+    or_triggers = []
+    for i, trig_i in enumerate(triggers_pt_sorted[:-1]):
+        for trig_j in triggers_pt_sorted[i+1:]:
+            or_triggers.append(trig_i+"_OR_"+trig_j)
+    return or_triggers
+
+
+triggers = {
     # do I need to worry about only using C2-C4 and D3-D6
     2015: {
         "ANY": {
@@ -243,6 +283,15 @@ TRIGGERS = {
     }
 }
 
+
+# add OR combinations for single-muon triggers
+for _, year_dict in triggers.items():
+    for _, period_dict in year_dict.items():
+        single_triggers = period_dict["SINGLE"]
+        single_triggers += get_ors(single_triggers)
+        period_dict["SINGLE"] = single_triggers
+
+
 SINGLE_TRIGGER_TEMPLATE = """
 New_MatchSelection
     MatchName {trigger_name}
@@ -262,25 +311,25 @@ End_MatchSelection
 
 def triggers_in_period(single: bool, year: int, period: str):
     """Return a list of triggers in a given period"""
-    triggers_in_year = TRIGGERS[year]
+    triggers_in_year = triggers[year]
     if period in triggers_in_year.keys():
         trigs_in_period = triggers_in_year[period]
     elif "ANY" in triggers_in_year.keys():
         trigs_in_period = triggers_in_year["ANY"]
     else:
         raise KeyError(period)
-    triggers = trigs_in_period["SINGLE" if single else "MULTI"]
-    return triggers
+    trigs = trigs_in_period["SINGLE" if single else "MULTI"]
+    return trigs
 
 def get_matches_text(single, year, period):
     """single = True if you want SINGLE triggers, else MULTI triggers"""
-    triggers = triggers_in_period(single, year, period)
+    trigs = triggers_in_period(single, year, period)
     matches_text = ""
-    for trigger in triggers:
+    for trigger in trigs:
         if "_OR_" in trigger:
             trigger_1, trigger_2 = trigger.split("_OR_")
             matches_text += OR_TRIGGER_TEMPLATE.format(
-                trigger_name=trigger, trigger_1=trigger_1, trigger2=trigger_2)
+                trigger_name=trigger, trigger_1=trigger_1, trigger_2=trigger_2)
         else:
             matches_text += SINGLE_TRIGGER_TEMPLATE.format(trigger_name=trigger)
     return matches_text
