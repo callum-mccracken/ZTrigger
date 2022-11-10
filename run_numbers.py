@@ -1,9 +1,9 @@
-# The numbers here come from COMA
-# https://atlas-tagservices.cern.ch/tagservices/RunBrowser/runBrowserReport/rBR_Period_Report.php
+"""
+Module to list run numbers for each period we care about.
 
-# Should I just be using "physics collisions"?
-# I'm assuming everything in AllYear 13TeV is okay,
-# despite the fact that some is marked as "commissioning data", "ramping", etc.
+The numbers here come from
+[COMA](https://atlas-tagservices.cern.ch/tagservices/RunBrowser/runBrowserReport/rBR_Period_Report.php)
+"""
 
 # 2015
 # using AllYear 13TeV data periods
