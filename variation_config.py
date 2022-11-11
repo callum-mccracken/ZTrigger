@@ -33,24 +33,24 @@ def make_variation_config(nominal_template, variation, year, period, single):
             "")
     elif variation == "dphill":
         var_file_text = var_file_text.replace(
-            "EXTRA_GLOBAL_CUTS_HERE\n",
-            "ProbeCut float dilep_dphi |<| 3.0426\n")
+            "EXTRA_GLOBAL_CUTS_HERE",
+            "ProbeCut float dilep_dphi |<| 3.0426")
     elif variation == "isoPflowLoose_VarRad":
         var_file_text = var_file_text.replace(
-            "EXTRA_GLOBAL_CUTS_HERE\n",
-            "GlobalCut bool probe_matched_IsoPflowLoose_VarRad = 1\n")
+            "EXTRA_GLOBAL_CUTS_HERE",
+            "GlobalCut bool probe_matched_IsoPflowLoose_VarRad = 1")
     elif variation == "isoPflowTight_VarRad":
         var_file_text = var_file_text.replace(
-            "EXTRA_GLOBAL_CUTS_HERE\n",
-            "GlobalCut bool probe_matched_IsoPflowTight_VarRad = 1\n")
+            "EXTRA_GLOBAL_CUTS_HERE",
+            "GlobalCut bool probe_matched_IsoPflowTight_VarRad = 1")
     elif variation == "isoLoose_VarRad":
         var_file_text = var_file_text.replace(
-            "EXTRA_GLOBAL_CUTS_HERE\n",
-            "GlobalCut bool probe_matched_IsoLoose_VarRad = 1\n")
+            "EXTRA_GLOBAL_CUTS_HERE",
+            "GlobalCut bool probe_matched_IsoLoose_VarRad = 1")
     elif variation == "isoTight_VarRad":
         var_file_text = var_file_text.replace(
-            "EXTRA_GLOBAL_CUTS_HERE\n",
-            "GlobalCut bool probe_matched_IsoTight_VarRad = 1\n")
+            "EXTRA_GLOBAL_CUTS_HERE",
+            "GlobalCut bool probe_matched_IsoTight_VarRad = 1")
     elif variation == "mll":
         var_file_text = var_file_text.replace(
             "EXTRA_GLOBAL_CUTS_HERE\n",
@@ -59,12 +59,12 @@ def make_variation_config(nominal_template, variation, year, period, single):
                 "ProbeCut floatGeV dilep_mll |RNG| 76.2 106.2")
     elif variation == "muneg":
         var_file_text = var_file_text.replace(
-            "EXTRA_GLOBAL_CUTS_HERE\n",
-            "GlobalCut float probe_q < 0.0\n")
+            "EXTRA_GLOBAL_CUTS_HERE",
+            "GlobalCut float probe_q < 0.0")
     elif variation == "mupos":
         var_file_text = var_file_text.replace(
-            "EXTRA_GLOBAL_CUTS_HERE\n",
-            "GlobalCut float probe_q > 0.0\n")
+            "EXTRA_GLOBAL_CUTS_HERE",
+            "GlobalCut float probe_q > 0.0")
     elif variation == "noIP":
         var_file_text = var_file_text.replace(
             "EXTRA_GLOBAL_CUTS_HERE\n",
@@ -75,12 +75,12 @@ def make_variation_config(nominal_template, variation, year, period, single):
                     "")
     elif variation == "nvtx_dw":
         var_file_text = var_file_text.replace(
-            "EXTRA_GLOBAL_CUTS_HERE\n",
-            "GlobalCut int PV_n < 19\n")
+            "EXTRA_GLOBAL_CUTS_HERE",
+            "GlobalCut int PV_n < 19")
     elif variation == "nvtx_up":
         var_file_text = var_file_text.replace(
-            "EXTRA_GLOBAL_CUTS_HERE\n",
-            "GlobalCut int PV_n >= 19\n")
+            "EXTRA_GLOBAL_CUTS_HERE",
+            "GlobalCut int PV_n >= 19")
     elif variation == "ptdw":
         lines = var_file_text.splitlines(keepends=True)
         new_lines = []
