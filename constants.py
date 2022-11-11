@@ -8,13 +8,12 @@ import os
 YEARS = [2015, 2016, 2017, 2018]
 
 VARIATIONS = [
-    "nominal", "dphill", "isoTight", "isoTightTrackOnly", "mll",
-    "muneg", "mupos", "noIP", "nvtx_dw", "nvtx_up", "ptdw", "ptup"]
+    "nominal", "dphill", "mll",
+    "muneg", "mupos", "noIP", "nvtx_dw", "nvtx_up", "ptdw", "ptup",
+    "isoPflowLoose_VarRad", "isoPflowTight_VarRad",
+    "isoLoose_VarRad", "isoTight_VarRad"]
 
-WORKING_POINTS = [
-    "Medium", "Loose", "Tight", "HighPt",
-    "PflowLoose_VarRad", "PflowTight_VarRad",
-    "Loose_VarRad", "Tight_VarRad"]
+WORKING_POINTS = ["Medium", "Loose", "Tight", "HighPt"]
 
 DETECTOR_REGIONS = ["All", "noCrack", "Barrel", "Endcap"]
 

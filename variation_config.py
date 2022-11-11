@@ -12,7 +12,7 @@ def new_pt_from_cut_line(single, line: str, return_original=False):
         elif pt_num==52.5:
             new_pt = 70.0
         else:
-            new_pt = pt_num + 5  # TODO is this how I should deal with this?
+            new_pt = pt_num + 5  # is this how I should deal with this?
     else:
         new_pt = pt_num + 5  # different bc of single vs multi turn-on curves
     if return_original:
@@ -35,14 +35,22 @@ def make_variation_config(nominal_template, variation, year, period, single):
         var_file_text = var_file_text.replace(
             "EXTRA_GLOBAL_CUTS_HERE\n",
             "ProbeCut float dilep_dphi |<| 3.0426\n")
-    elif variation == "isoTight":
+    elif variation == "isoPflowLoose_VarRad":
         var_file_text = var_file_text.replace(
             "EXTRA_GLOBAL_CUTS_HERE\n",
-            "GlobalCut bool probe_matched_IsoFCTight = 1\n")
-    elif variation == "isoTightTrackOnly":
+            "GlobalCut bool probe_matched_IsoPflowLoose_VarRad = 1\n")
+    elif variation == "isoPflowTight_VarRad":
         var_file_text = var_file_text.replace(
             "EXTRA_GLOBAL_CUTS_HERE\n",
-            "GlobalCut bool probe_matched_IsoFCTightTrackOnly = 1\n")
+            "GlobalCut bool probe_matched_IsoPflowTight_VarRad = 1\n")
+    elif variation == "isoLoose_VarRad":
+        var_file_text = var_file_text.replace(
+            "EXTRA_GLOBAL_CUTS_HERE\n",
+            "GlobalCut bool probe_matched_IsoLoose_VarRad = 1\n")
+    elif variation == "isoTight_VarRad":
+        var_file_text = var_file_text.replace(
+            "EXTRA_GLOBAL_CUTS_HERE\n",
+            "GlobalCut bool probe_matched_IsoTight_VarRad = 1\n")
     elif variation == "mll":
         var_file_text = var_file_text.replace(
             "EXTRA_GLOBAL_CUTS_HERE\n",
