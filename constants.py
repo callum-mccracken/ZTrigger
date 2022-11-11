@@ -43,7 +43,7 @@ SM_BASIC_CONFIG_PATH_FMT = os.path.join(
 SM_MATCHES_CONFIG_PATH_FMT = os.path.join(
     SINGLE_MUON_DIR, "MatchesForZmumuMuon_{year}_{period}.conf")
 SM_VAR_CONFIG_PATH_FMT = os.path.join(
-    SINGLE_MUON_DIR, "MuonProbes_OC_{variation}_{year}_{period}.conf")
+    SINGLE_MUON_DIR, "MuonProbes_SingleMuonTriggers_{variation}_{year}_{period}.conf")
 
 ML_BASIC_CONFIG_PATH_FMT = os.path.join(
     MULTI_LEG_DIR, "BasicConfigZMuon_{year}_{period}.conf")
@@ -51,4 +51,4 @@ ML_MATCHES_CONFIG_PATH_FMT = os.path.join(
     MULTI_LEG_DIR, "MatchesForZmumuMuon_{year}_{period}.conf")
 ML_VAR_CONFIG_PATH_FMT = os.path.join(
     MULTI_LEG_DIR,
-    "MuonProbes_LooseProbes_noProbeIP_{variation}_{year}_{period}.conf")
+    "MuonProbes_MultiLegTriggers_{variation}_{year}_{period}.conf")
