@@ -1,11 +1,14 @@
 """Module for making the config for nominal variation."""
-import re
 import os
-from constants import WORKING_POINTS, DETECTOR_REGIONS, TOP_LEVEL_DIR,\
-    SM_PRE_NOMINAL_CONFIG_TEMPLATE, ML_PRE_NOMINAL_CONFIG_TEMPLATE,\
-    SM_NOMINAL_CONFIG_TEMPLATE, ML_NOMINAL_CONFIG_TEMPLATE
-from triggers import triggers_in_period
+import re
+
+from constants import (DETECTOR_REGIONS, ML_NOMINAL_CONFIG_TEMPLATE,
+                       ML_PRE_NOMINAL_CONFIG_TEMPLATE,
+                       SM_NOMINAL_CONFIG_TEMPLATE,
+                       SM_PRE_NOMINAL_CONFIG_TEMPLATE, TOP_LEVEL_DIR,
+                       WORKING_POINTS)
 from run_numbers import RUN_NUMBERS
+from triggers import triggers_in_period
 
 SINGLE_BLOCK_TEMPLATE = """
 New_TPSelection ZmumuTPMerged OC MuonProbes
@@ -20,14 +23,17 @@ MULTI_BLOCK_TEMPLATE = """
 New_TPSelection ZmumuTPMuon OC {working_point}Probes_noProbeIP
     NameProbeSel {working_point}
     ProbeCut bool probe_matched_{working_point} = 1
-    ProbeCut floatGeV probe_pt > {pt_cutoff:.1f}
+    ProbeCut floatGeV probe_pt > {pt_cutoff}
     Matches {trigger} 
     DetRegion {detector_regions}
 End_TPSelection
 """
 
 def lowest_pt_from_single_trigger(trigger: str):
-    """Given a trigger name, return """
+    """
+    Given a trigger name, return lowest pt
+    (for multi-leg triggers, we can have multiple pts)
+    """
     # pattern explanation:
     # blablabla_mu102_mu19blablala -- lowest pt is the second one
     match = re.match(r"(.)*(mu([0-9]+)){1,2}(.)*", trigger)
