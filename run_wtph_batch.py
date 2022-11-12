@@ -111,11 +111,11 @@ for year in c.YEARS:
                         'batchScript "source ' + job_file + '" -O '+ atlfile,
                         "echo 'Submitting " + atlfile + "'",
                         "cd " + c.WTPH_SUBMIT_AREA,
-                        "sbatch \
-                            --account " + c.ACCOUNT +" \
-                            --time " + c.TIME +" \
-                            --mail-user " + c.MAIL_USER +" \
-                            --mail-type " + c.MAIL_TYPE + " "+ atlfile,
+                        "sbatch" +\
+                        " --account " + c.ACCOUNT +\
+                        " --time " + c.TIME +\
+                        " --mail-user " + c.MAIL_USER +\
+                        " --mail-type " + c.MAIL_TYPE + " "+ atlfile,
                         "cd " + CWD]
 
 with open(SUBMIT_FILE, "w") as subfile:
