@@ -119,6 +119,6 @@ for year in c.YEARS:
                         "cd " + CWD]
 
 with open(SUBMIT_FILE, "w") as subfile:
-    subfile.writelines(MAIN_FILE_LINES)
+    subfile.write("\n".join(MAIN_FILE_LINES))
 
 print("To run all jobs: source " + SUBMIT_FILE)
