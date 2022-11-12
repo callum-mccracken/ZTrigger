@@ -75,9 +75,13 @@ WTPH_SUBMIT_AREA = os.path.join("/scratch/", USER)
 # where the input conigs are read from
 WTPH_INPUT_CONF_DIR = os.path.join(
     MTPPP_DATA_PATH, "InputConfTRIUMF_"+NTUPLE_VERSION)
-# which histo config to user
+# which histo config to use
 WTPH_2D_HISTO_CONF = os.path.join(
     MTPPP_DATA_PATH, "HistoConf/ZTrigger/SingleMuonTriggers/2D_hist.conf")
-# TODO: this could be trouble! Need multi-leg too!
+# where the run configs are stored
 WTPH_RUN_CONF_DIR = os.path.join(
     MTPPP_DATA_PATH, "RunConf/ZTrigger/")
+# how the input configs should be named by the time WTPH scripts are written
+WTPH_INPUT_CONF_FMT = {
+    "data": "data_{year}_{period}.conf",
+    "mc": "{year}_{period}_Zmumu.conf"}

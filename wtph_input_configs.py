@@ -11,8 +11,9 @@ def check_formatted():
     input_configs = os.listdir(c.WTPH_INPUT_CONF_DIR)
     for year in c.YEARS:
         for period in RUN_NUMBERS[year]:
-            assert f"data_{year}_{period}.conf" in input_configs
-            assert f"{year}_{period}_Zmumu.conf" in input_configs
+            for data_mc in ["data", "mc"]:
+                assert c.WTPH_INPUT_CONF_FMT[data_mc].format(
+                    year=year, period=period) in input_configs
 
 def merge_two(config_path_1, config_path_2, output_path):
     """
@@ -22,9 +23,9 @@ def merge_two(config_path_1, config_path_2, output_path):
     """
 
     # get lines from files
-    with open(config_path_1, "r", encoding="utf-8") as conf1:
+    with open(config_path_1, "r") as conf1:
         conf1_lines = conf1.readlines()
-    with open(config_path_2, "r", encoding="utf-8") as conf2:
+    with open(config_path_2, "r") as conf2:
         conf2_lines = conf2.readlines()
     lines = conf1_lines + conf2_lines
 
@@ -37,20 +38,20 @@ def merge_two(config_path_1, config_path_2, output_path):
     new_lines = [
         "############################################",
         "# This is the result of merging two files:",
-        f"# {config_path_1}",
-        f"# {config_path_2}",
+        "# " + config_path_1,
+        "# " + config_path_2,
         "############################################",
         "#InputFiles:"] + inputfiles +\
         ["#Good run Lists to be applied:"] + grls +\
         ["#Pile-up reweighting lumicalc files:"] + prw_data +\
         ["#Pile-up reweighting config files:"] + prw_mc
 
-    with open(output_path, "w", encoding="utf-8") as outfile:
+    with open(output_path, "w") as outfile:
         outfile.writelines(new_lines)
     print("wrote", output_path)
 
 
-def merge(config_filenames: list[str], output_path: str):
+def merge(config_filenames, output_path):
     """Merge a list of input configs."""
     if len(config_filenames) < 2:
         raise ValueError("Why are you trying to merge this list?")
@@ -71,18 +72,21 @@ def format_input_configs():
     for year in c.YEARS:
         for period in RUN_NUMBERS[year]:
             # first deal with data files
-            data_filename = f"data_{year}_{period}.conf"
+            data_filename = c.WTPH_INPUT_CONF_FMT["data"].format(
+                year=year, period=period)
             data_filepath = os.path.join(c.WTPH_INPUT_CONF_DIR, data_filename)
             if data_filename not in input_configs:
                 # try looking for a single file with year_period_
                 data_matches = [
                     f for f in input_configs
-                    if f.startswith(f"data_{year}_{period}")]
-                if len(data_matches) == 0:
+                    if f.startswith("data_{year}_{period}".format(
+                        year=year, period=period))]
+                if data_matches == []:
                     # try looking for AllYear config
                     data_matches = [
                         f for f in input_configs
-                        if f.startswith(f"data_{year}_AllYear")]
+                        if f.startswith("data_{year}_AllYear".format(
+                            year=year))]
                     assert len(data_matches) == 1
                     filepath = os.path.join(
                         c.WTPH_INPUT_CONF_DIR, data_matches[0])
@@ -100,23 +104,27 @@ def format_input_configs():
                     # merge multiple year_period files
                     data_matches = [
                         f for f in input_configs
-                        if f.startswith(f"data_{year}_{period}")]
+                        if f.startswith("data_{year}_{period}".format(
+                            year=year, period=period))]
                     # merge all the configs for that period into one
                     merge(data_matches, data_filepath)
 
             # same vibe with mc things
-            mc_filename = f"{year}_{period}_Zmumu.conf"
+            mc_filename = c.WTPH_INPUT_CONF_FMT["mc"].format(
+                year=year, period=period)
             mc_filepath = os.path.join(c.WTPH_INPUT_CONF_DIR, mc_filename)
             if mc_filename not in input_configs:
                 # try looking for a single file with year_period_
                 mc_matches = [
                     f for f in input_configs
-                    if f.startswith(f"{year}_{period}_Zmumu")]
-                if len(mc_matches) == 0:
+                    if f.startswith("{year}_{period}_Zmumu".format(
+                        year=year, period=period))]
+                if mc_matches == []:
                     # try looking a year-long config
                     mc_matches = [
                         f for f in input_configs
-                        if f.startswith(f"{year}_Zmumu")]
+                        if f.startswith("{year}_Zmumu".format(
+                            year=year))]
                     assert len(mc_matches) == 1
                     filepath = os.path.join(
                         c.WTPH_INPUT_CONF_DIR, mc_matches[0])
@@ -134,7 +142,8 @@ def format_input_configs():
                     # merge multiple year_period files
                     mc_matches = [
                         f for f in input_configs
-                        if f.startswith(f"{year}_{period}_Zmumu")]
+                        if f.startswith("{year}_{period}_Zmumu".format(
+                            year=year, period=period))]
                     # merge all the configs for that period into one
                     merge(mc_matches, mc_filepath)
 
