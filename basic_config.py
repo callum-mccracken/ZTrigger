@@ -17,12 +17,12 @@ def make_basic_config(match_filename, year, period, single: bool):
     # input detector regions file path
     basic_template_text = basic_template_text.replace(
         "DETECTOR_REGIONS_FILE_HERE",
-        os.path.join(c.TOP_LEVEL_DIR, c.DETECTOR_REGIONS_SAVE_PATH))
+        os.path.join(c.ZTRIGGER_DIR, c.DETECTOR_REGIONS_SAVE_PATH))
 
     # use given matches file
     basic_file_text = basic_template_text.replace(
         "MATCHES_FILE_HERE",
-        os.path.join(c.TOP_LEVEL_DIR, match_filename))
+        os.path.join(c.ZTRIGGER_DIR, match_filename))
 
     # get filename and save
     fmt = c.SM_BASIC_CONFIG_PATH_FMT if single else c.ML_BASIC_CONFIG_PATH_FMT

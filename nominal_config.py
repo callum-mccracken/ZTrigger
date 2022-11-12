@@ -5,7 +5,7 @@ import re
 from constants import (DETECTOR_REGIONS, ML_NOMINAL_CONFIG_TEMPLATE,
                        ML_PRE_NOMINAL_CONFIG_TEMPLATE,
                        SM_NOMINAL_CONFIG_TEMPLATE,
-                       SM_PRE_NOMINAL_CONFIG_TEMPLATE, TOP_LEVEL_DIR,
+                       SM_PRE_NOMINAL_CONFIG_TEMPLATE, ZTRIGGER_DIR,
                        WORKING_POINTS)
 from run_numbers import RUN_NUMBERS
 from triggers import triggers_in_period
@@ -105,7 +105,7 @@ def make_nominal_config(single, year, period, basic_filename):
 
     nominal_file_text = nominal_file_text.replace(
         "BASIC_CONFIG_PATH_HERE",
-        os.path.join(TOP_LEVEL_DIR, basic_filename))
+        os.path.join(ZTRIGGER_DIR, basic_filename))
 
     # make blocks
     nominal_file_text = nominal_file_text.replace(

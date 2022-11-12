@@ -5,20 +5,28 @@ like the list of variation names and template file paths.
 
 import os
 
-YEARS = [2015, 2016, 2017, 2018]
+NTUPLE_VERSION = "v66.3.0"
+USER = os.getenv("USER")
 
+# stuff for slurm
+TIME = "24:00:00"  # time limit for batch jobs
+ACCOUNT = "ctb-stelzer"  # slurm account
+RELEASE = "AthAnalysis,21.2.196"  # ATLAS software release you set up
+MAIL_USER = "your-email-here@example.com"  # what to use for job-related emails
+MAIL_TYPE = "ALL"  # how many emails do you want? BEGIN END FAIL REQUEUE ALL
+
+# stuff for looping over
+YEARS = [2015, 2016, 2017, 2018]
 VARIATIONS = [
     "nominal", "dphill", "mll",
     "muneg", "mupos", "noIP", "nvtx_dw", "nvtx_up", "ptdw", "ptup",
     "isoPflowLoose_VarRad", "isoPflowTight_VarRad",
     "isoLoose_VarRad", "isoTight_VarRad"]
-
 WORKING_POINTS = ["Medium", "Loose", "Tight", "HighPt"]
-
 DETECTOR_REGIONS = ["All", "noCrack", "Barrel", "Endcap"]
 
 # where we are now, relative to MuonTPPostProcessing
-TOP_LEVEL_DIR = "MuonTPPostProcessing/RunConf/ZTrigger/"
+ZTRIGGER_DIR = "MuonTPPostProcessing/RunConf/ZTrigger/"
 
 # directory for storing single muon stuff, relative to TOP_LEVEL_DIR
 SINGLE_MUON_DIR = "SingleMuonTriggers"
@@ -43,7 +51,8 @@ SM_BASIC_CONFIG_PATH_FMT = os.path.join(
 SM_MATCHES_CONFIG_PATH_FMT = os.path.join(
     SINGLE_MUON_DIR, "MatchesForZmumuMuon_{year}_{period}.conf")
 SM_VAR_CONFIG_PATH_FMT = os.path.join(
-    SINGLE_MUON_DIR, "MuonProbes_SingleMuonTriggers_{variation}_{year}_{period}.conf")
+    SINGLE_MUON_DIR,
+    "MuonProbes_SingleMuonTriggers_{variation}_{year}_{period}.conf")
 
 ML_BASIC_CONFIG_PATH_FMT = os.path.join(
     MULTI_LEG_DIR, "BasicConfigZMuon_{year}_{period}.conf")
@@ -52,3 +61,23 @@ ML_MATCHES_CONFIG_PATH_FMT = os.path.join(
 ML_VAR_CONFIG_PATH_FMT = os.path.join(
     MULTI_LEG_DIR,
     "MuonProbes_MultiLegTriggers_{variation}_{year}_{period}.conf")
+
+# Useful paths
+MTPPP_ROOT = os.path.realpath("../../../../../")
+MTPPP_DATA_PATH = os.path.join(
+    MTPPP_ROOT, "MuonTPPostProcessing/MuonTPPostProcessing/data")
+# where to store output from WTPH
+WTPH_OUTPUT_DIR = os.path.join(MTPPP_ROOT, "output")
+# where job scripts will be written
+WTPH_JOB_AREA = os.path.join(WTPH_OUTPUT_DIR, "WTPHJobFiles/")
+# where you submit your batch jobs from (cannot be in /home/)
+WTPH_SUBMIT_AREA = os.path.join("/scratch/", USER)
+# where the input conigs are read from
+WTPH_INPUT_CONF_DIR = os.path.join(
+    MTPPP_DATA_PATH, "InputConfTRIUMF_"+NTUPLE_VERSION)
+# which histo config to user
+WTPH_2D_HISTO_CONF = os.path.join(
+    MTPPP_DATA_PATH, "HistoConf/ZTrigger/SingleMuonTriggers/2D_hist.conf")
+# TODO: this could be trouble! Need multi-leg too!
+WTPH_RUN_CONF_DIR = os.path.join(
+    MTPPP_DATA_PATH, "RunConf/ZTrigger/")
