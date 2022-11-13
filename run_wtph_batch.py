@@ -44,13 +44,13 @@ CWD = os.getcwd()
 
 # setup stuff for individual scripts
 HEADER = "#!/bin/bash\n"
-SETUP = "lsetup rucio\n\
-    echo " + PW + " | voms-proxy-init -voms atlas\n\
-    cd " + c.MTPPP_ROOT + "\n\
-    asetup " + c.RELEASE + "\n\
-    source */setup.sh\n\
-    mkdir -p " + c.WTPH_OUTPUT_DIR + "\n\
-    cd " + os.path.join(c.MTPPP_ROOT, "run") + "\n"
+SETUP = 'lsetup "rucio SL7Python2"\n' +\
+    "echo " + PW + " | voms-proxy-init -voms atlas\n" +\
+    "cd " + os.path.join(c.MTPPP_ROOT, "build") + "\n" +\
+    "asetup\n" +\
+    "source */setup.sh\n" +\
+    "mkdir -p " + c.WTPH_OUTPUT_DIR + "\n" +\
+    "cd " + os.path.join(c.MTPPP_ROOT, "run") + "\n"
 
 # stuff we'll write into the master script to run at the end
 MAIN_FILE_LINES = []
