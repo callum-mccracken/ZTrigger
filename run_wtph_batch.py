@@ -80,10 +80,8 @@ for year in c.YEARS:
                     # output file we'll write to
                     output_file = os.path.join(
                         c.WTPH_OUTPUT_DIR,
-                        "{data_mc}{year}_{prd}_\
-                            {syst}_{NTUPV}_{trigs}.root".format(
-                                data_mc=data_mc, year=year, prd=prd, syst=syst,
-                                NTUPV=NTUPV, trigs=trigs))
+                        data_mc + str(year) + "_" + prd + "_" +\
+                        syst + "_" + NTUPV + "_" + trigs + ".root")
 
                     # write the bash scripts that runs WTPH
                     job_file = os.path.join(
