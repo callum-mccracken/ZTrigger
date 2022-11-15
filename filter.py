@@ -39,7 +39,7 @@ def main():
             cmd = "rucio list-datasets-rse " + RSE + " | grep " + line
             cmd_output = readcmd(cmd)
             print(cmd_output)
-            if line in cmd_output:
+            if line in str(cmd_output):
                 print("Adding", line)
             else:
                 raise ValueError("Files do not exist!")
