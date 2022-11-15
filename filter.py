@@ -1,12 +1,27 @@
 """Module to filter ListDisk output"""
 from __future__ import print_function
 import os
+import tempfile
 from constants import MTPPP_ROOT
 
 RSE = "CA-SFU-T2_LOCALGROUPDISK"
 LIST_DISK_OUTPUT_DIR = os.path.join(MTPPP_ROOT, "run")
 LIST_DISK_OUTPUT_FILE = os.path.join(
     LIST_DISK_OUTPUT_DIR, "CA-SFU-T2_LOCALGROUPDISK_2022-11-13_v66.3.0.txt")
+
+def readcmd(cmd):
+    """Get the output of a terminal command."""
+    ftmp = tempfile.NamedTemporaryFile(
+        suffix='.out', prefix='tmp', delete=False)
+    fpath = ftmp.name
+    ftmp.close()
+    os.system(cmd + " > " + fpath)
+    data = ""
+    with open(fpath, 'r') as tmpfile:
+        data = tmpfile.read()
+        tmpfile.close()
+    os.remove(fpath)
+    return data
 
 def main():
     """Filter to only get the files we care about for SFs"""
@@ -19,9 +34,10 @@ def main():
     filtered_lines = []
     for line in lines:
         if "Main" in line or ("Zmumu" in line and "Powheg" in line):
+            print("Checking", line)
             filtered_lines.append(line)
             cmd = "rucio list-datasets-rse " + RSE + " | grep " + line
-            cmd_output = os.popen(cmd).read()
+            cmd_output = readcmd(cmd)
             print(cmd_output)
             if line in cmd_output:
                 print("Adding", line)
