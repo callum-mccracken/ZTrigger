@@ -25,7 +25,8 @@ def main():
             os.system("rucio list-datasets-rse " + RSE + " | grep " + line)
             raw_input("Hit enter when ready:")
 
-    with open("filtered.txt", "w+") as filtered_file:
+    out_path = os.path.join(LIST_DISK_OUTPUT_DIR, "filtered.txt")
+    with open(out_path, "w+") as filtered_file:
         filtered_file.writelines(filtered_lines)
 
 
