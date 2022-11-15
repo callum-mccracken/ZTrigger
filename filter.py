@@ -17,13 +17,16 @@ def main():
         lines = ld_output_file.readlines()
 
     filtered_lines = []
-    print("Watch this and make sure each line lists some datasets!")
     for line in lines:
         if "Main" in line or ("Zmumu" in line and "Powheg" in line):
             filtered_lines.append(line)
-            print("Adding", line)
-            os.system("rucio list-datasets-rse " + RSE + " | grep " + line)
-            raw_input("Hit enter when ready:")
+            cmd = "rucio list-datasets-rse " + RSE + " | grep " + line
+            cmd_output = os.popen(cmd).read()
+            print(cmd_output)
+            if line in cmd_output:
+                print("Adding", line)
+            else:
+                raise ValueError("Files do not exist!")
 
     out_path = os.path.join(LIST_DISK_OUTPUT_DIR, "filtered.txt")
     with open(out_path, "w+") as filtered_file:
