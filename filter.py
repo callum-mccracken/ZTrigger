@@ -1,14 +1,14 @@
 """Module to filter ListDisk output"""
 from __future__ import print_function
 import os
-import tempfile
 from constants import MTPPP_ROOT
 
 RSE = "CA-SFU-T2_LOCALGROUPDISK"
 LIST_DISK_OUTPUT_DIR = os.path.join(MTPPP_ROOT, "run")
 LIST_DISK_OUTPUT_FILE = os.path.join(
     LIST_DISK_OUTPUT_DIR, "CA-SFU-T2_LOCALGROUPDISK_2022-11-13_v66.3.0.txt")
-
+TEMP_FILE_PATH = "temp.out"
+FILTERED_OUTPUT_FILENAME = "filtered.txt"
 
 def main():
     """Filter to only get the files we care about for SFs"""
@@ -20,20 +20,22 @@ def main():
 
     filtered_lines = []
     for line in lines:
+        # the actual line where we do the filtering
         if "Main" in line or ("Zmumu" in line and "Powheg" in line):
             line = line.replace('\n', '')
-            filtered_lines.append(line)
+            # ensure the dataset actually exists
             cmd = "rucio list-datasets-rse " + RSE + " | grep " + line
-            fpath = "temp.out"
-            os.system(cmd + " > " + fpath)
-            with open(fpath, 'r') as tmpfile:
+            os.system(cmd + " > " + TEMP_FILE_PATH)
+            with open(TEMP_FILE_PATH, 'r') as tmpfile:
                 cmd_output = tmpfile.read()
-            if line in str(cmd_output):
+            dataset_exists = line in str(cmd_output)
+            if dataset_exists:
                 print("Adding", line)
+                filtered_lines.append(line)
             else:
                 raise ValueError("File" + line + "does not exist!")
-
-    out_path = os.path.join(LIST_DISK_OUTPUT_DIR, "filtered.txt")
+    # write filtered output
+    out_path = os.path.join(LIST_DISK_OUTPUT_DIR, FILTERED_OUTPUT_FILENAME)
     with open(out_path, "w+") as filtered_file:
         filtered_file.writelines(filtered_lines)
 
