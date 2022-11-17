@@ -145,7 +145,7 @@ def get_options():
     parser.add_option('-t', '--trigger', type='string', default=None,
                       dest='trigger')
     # trigger type selection, SingleMuonTriggers or MultiLegTriggers
-    parser.add_option('-tt', '--triggerType', type='string', default=None,
+    parser.add_option('-T', '--triggerType', type='string', default=None,
                       dest='triggerType')
     # muon quality working point: Medium, Loose, Tight, HighPt
     parser.add_option('-q', '--quality', type='string', default=None,
