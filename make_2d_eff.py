@@ -743,7 +743,9 @@ def run_over_everything():
         for number_year in c.YEARS:
             year = str(number_year)[2:]
             for period in periods(number_year):
-                for region in c.DETECTOR_REGIONS:
+                # for some reason only barrel and endcap seem to have run
+                # (in wtph)
+                for region in ["Barrel", "Endcap"]:
                     for trigger in triggers_in_period(single,
                                                       number_year,
                                                       period):
