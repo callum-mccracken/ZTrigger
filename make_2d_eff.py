@@ -192,7 +192,7 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     """Make 2D Efficiency histograms for all the given parameters."""
     print(year, period, quality, region, trigger_type)
     # Suppresses basic info prints to terminal (used to shut up TEff constructor)
-    gROOT.ProcessLine("gErrorIgnoreLevel = 1001;")
+    gROOT.ProcessLine("gErrorIgnoreLevel = 0;")
 
     # check year
     if year not in MC_CAMPAIGNS.keys():
