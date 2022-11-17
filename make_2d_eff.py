@@ -376,8 +376,6 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
         hists["data"][name] = probe_hists["data"][name].Clone()
         hists["data"][name].Reset()
 
-    print(type(probe_hists["data"]["nominal"]))
-
     # MC:
     for j, mc_varfile in enumerate(mc_files):
         name = c.VARIATIONS[j]
@@ -400,6 +398,9 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
         # (+/- errors if needed) down below
         hists["mc"][name] = probe_hists["mc"][name].Clone()
         hists["mc"][name].Reset()
+
+    print(type(probe_hists["data"]["nominal"]))
+    print(type(probe_hists["mc"]["nominal"]))
 
     # Setting up data systematic, statistical variation histograms
     # for data
@@ -429,6 +430,10 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     mc_stat_dw.Reset()
     hists["mc"]["isoEnv"] = mc_probe_nominal.Clone('isoEnv')
     hists["mc"]["isoEnv"].Reset()
+
+    print("yeet")
+    print(type(data_probe_nominal))
+    print(type(mc_probe_nominal))
 
     # Number of x- and y-bins - will be used many times
     # assumed to be the same for data and mc
@@ -811,6 +816,8 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
 def run_over_everything():
     """Run make_2d_eff_hists"""
     for trigger_type in c.TRIGGER_TYPES:
+        # for now
+        trigger_type = "SingleMuonTriggers"
         single = (trigger_type == "SingleMuonTriggers")
         for number_year in c.YEARS:
             year = str(number_year)[2:]
