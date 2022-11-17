@@ -20,7 +20,7 @@ New_TPSelection ZmumuTPMerged OC MuonProbes
 End_TPSelection
 """
 MULTI_BLOCK_TEMPLATE = """
-New_TPSelection ZmumuTPMuon OC {working_point}Probes_noProbeIP
+New_TPSelection ZmumuTPMerged OC MuonProbes
     NameProbeSel {working_point}
     ProbeCut bool probe_matched_{working_point} = 1
     ProbeCut floatGeV probe_pt > {pt_cutoff}
