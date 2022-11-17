@@ -185,9 +185,9 @@ def get_options():
     return options
 
 
-def make_2d_eff_hists(year, period, region, trigger, quality, version,
-                      input_dir, output_dir, make_sf_plots, print_sf_values,
-                      debug, save_pngs):
+def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
+                      version, input_dir, output_dir, make_sf_plots,
+                      print_sf_values, debug, save_pngs):
     """Make 2D Efficiency histograms for all the given parameters."""
     # check year
     if year not in MC_CAMPAIGNS.keys():
