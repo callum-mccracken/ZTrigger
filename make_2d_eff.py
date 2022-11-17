@@ -194,15 +194,12 @@ def main():
     for d_mc in ["data", "mc"]:
         root_files[d_mc][year] = {}
         root_files[d_mc][year][period] = {}
-        period_files = [
-            input_file for input_file in input_files
-            if input_file.startswith(d_mc+str(year)+"_"+period)]
         for var in c.VARIATIONS:
-            var_confs = [df for df in period_files if var in df]
-            if len(var_confs) != 1:
-                raise ValueError(
-                    "Multiple variation configs found... Why?", var_confs)
-            var_conf = os.path.join(options.inDir, var_confs[0])
+            var_conf_name = d_mc+str(year)+"_".join(
+                period, var, version, trigger_type)+".root"
+            var_conf = os.path.join(input_dir, var_conf_name)
+            if not os.path.exists(var_conf):
+                raise ValueError("File not found:", var_conf)
             root_files[d_mc][year][period][var] = TFile(var_conf)
 
         # Creating dictionaries with (histname, hist) tuples
