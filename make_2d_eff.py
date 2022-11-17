@@ -511,7 +511,6 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
         # TODO: is this the right way to deal with divide-by-zero errors?
         if mc_eff == 0:
             logging.warning("MC efficiency is zero -- skipping!")
-            return
         else:
             scale_factor = data_eff / mc_eff
         sfstaterr = 0 if mc_eff == 0 or data_eff == 0 else (scale_factor * (
