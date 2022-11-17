@@ -281,8 +281,7 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
             var_conf = os.path.join(input_dir, var_conf_name)
             if not os.path.exists(var_conf):
                 raise ValueError("File not found:", var_conf)
-
-           # get associated file
+           # open file
             var_file = TFile(var_conf)
             # get probe hist, raise error if not found
             probe_branch = os.path.join(probe_dir, probe_hist)
