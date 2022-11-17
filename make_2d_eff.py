@@ -65,14 +65,22 @@ import constants as c
 # TODO Need to be careful about period K 2017 nvtx systematic:
 # TODO cut >/< 19 vertices for 2017 but >/< 25 for period K
 
+# Suppresses basic info prints to terminal (used to shut up TEff constructor)
+gROOT.ProcessLine("gErrorIgnoreLevel = 1001;")
+# set up global style stuff
+gROOT.LoadMacro('AtlasUtils.C')
+gROOT.LoadMacro('AtlasLabels.C')
+if gROOT.LoadMacro('AtlasStyle.C') > 0:
+    SetAtlasStyle()
+
 
 def draw_hist(out_dir, title_prefix, hist, name):
-    """Make  ahistogram"""
-    c = TCanvas()
-    c.SetTopMargin(0.1)
-    c.SetBottomMargin(0.15)
-    c.SetLeftMargin(0.15)
-    c.SetRightMargin(0.15)
+    """Make a histogram."""
+    canvas = TCanvas()
+    canvas.SetTopMargin(0.1)
+    canvas.SetBottomMargin(0.15)
+    canvas.SetLeftMargin(0.15)
+    canvas.SetRightMargin(0.15)
     gStyle.SetOptTitle(1)
     gStyle.SetOptStat(0)
     gStyle.SetPaintTextFormat(".3f")
@@ -83,11 +91,11 @@ def draw_hist(out_dir, title_prefix, hist, name):
     hist.SetMaximum(1.0)
     hist.SetMinimum(0.0)
     hist.Draw("COLZ TEXT")
-    c.SaveAs(out_dir + title_prefix + name + ".png")
-    c.Close()
+    canvas.SaveAs(out_dir + title_prefix + name + ".png")
+    canvas.Close()
 
 
-def make_parser():
+def get_options():
     """Return a parser with all args we'll need for this script."""
     parser = optparse.OptionParser()
     # Save PNGs of 2D data/mc efficiency hists
@@ -126,14 +134,7 @@ def make_parser():
     # T&P NTuple Version e.g. v65.3.2 or v064
     parser.add_option('-v', '--version', type='string', default=None,
                       dest='version')
-    return parser
 
-
-def main():
-
-    # Suppresses basic info prints to terminal (used to shut up TEff constructor)
-    gROOT.ProcessLine("gErrorIgnoreLevel = 1001;")
-    parser = make_parser()
     (options, _) = parser.parse_args()
 
     if options.debug:
@@ -141,18 +142,33 @@ def main():
     else:
         logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 
+    if options.year is None:
+        print("using default year: 2018")
+        options.year = "2018"
+    if options.period is None:
+        print("using default period: 2018")
+        options.period = "B"
+    if options.trigger is None:
+        print("using defualt trigger: HLT_mu26_ivarmedium")
+        options.trigger = "HLT_mu26_ivarmedium"
+    if options.quality is None:
+        print("using defualt quality: Medium")
+        options.quality = "Medium"
+
+    return options
+
+
+def main():
+    """Make 2D Efficiency Histograms."""
+    options = get_options()
+
     year = options.year
     period = options.period
-    trigger = options.trigger
     quality = options.quality
-
-    gROOT.LoadMacro('AtlasUtils.C')
-    gROOT.LoadMacro('AtlasLabels.C')
-    if gROOT.LoadMacro('AtlasStyle.C') > 0:
-        SetAtlasStyle()
+    trigger = options.trigger
 
     # Load input files
-    logging.debug("Looking for input files in directory: "+options.inDir)
+    logging.debug("Looking for input files in directory: %s", options.inDir)
     input_files = os.listdir(options.inDir)
 
     # for storing actual file data
