@@ -282,8 +282,10 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     #     "isoLoose_VarRad", "isoTight_VarRad"]
     print("Using nominal data file", var_conf_fmt.format(
         data_mc="data", variation="nominal"))
+
     data_nominal = TFile(var_conf_fmt.format(
         data_mc="data", variation="nominal"))
+
     data_dphill = TFile(var_conf_fmt.format(
         data_mc="data", variation="dphill"))
     data_mll = TFile(var_conf_fmt.format(
@@ -347,6 +349,11 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
         mc_nominal, mc_dphill, mc_mll, mc_muneg, mc_mupos,
         mc_no_ip, mc_nvtx_dw, mc_nvtx_up, mc_ptdw, mc_ptup,
         mc_iso_loose_pf, mc_iso_tight_pf, mc_iso_loose, mc_iso_tight]
+
+
+    print("n_data", data_nominal.Get(probe_dir + "/" + probe_hist).GetEntries())
+    print("n_data", mc_nominal.Get(probe_dir + "/" + probe_hist).GetEntries())
+
 
     probe_hists = {"data": {}, "mc": {}}
     match_hists = {"data": {}, "mc": {}}
