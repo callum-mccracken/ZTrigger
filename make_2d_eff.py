@@ -282,7 +282,7 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
             var_conf = os.path.join(input_dir, var_conf_name)
             if not os.path.exists(var_conf):
                 raise ValueError("File not found:", var_conf)
-           # open file
+            # open file
             var_file = TFile(var_conf)
             # get probe hist, raise error if not found
             probe_branch = os.path.join(probe_dir, probe_hist)
@@ -310,411 +310,432 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
             hists[d_mc][var] = probe_hists[d_mc][var].Clone()
             hists[d_mc][var].Reset()
 
-    # Setting up data systematic, statistical variation histograms
-    # for data
-    data_probe_nominal = probe_hists["data"]["nominal"]
+        # Setting up data systematic, statistical variation histograms
+        # for data
+        data_probe_nominal = probe_hists["data"]["nominal"]
 
-    data_syst_up = data_probe_nominal.Clone('dSystUp')
-    data_syst_up.Reset()
-    data_syst_dw = data_probe_nominal.Clone('dSystDw')
-    data_syst_dw.Reset()
-    data_stat_up = data_probe_nominal.Clone('dStatUp')
-    data_stat_up.Reset()
-    data_stat_dw = data_probe_nominal.Clone('dStatDw')
-    data_stat_dw.Reset()
-    # isoEnv = isolation envelope
-    hists["data"]["isoEnv"] = data_probe_nominal.Clone('isoEnv')
-    hists["data"]["isoEnv"].Reset()
+        data_syst_up = data_probe_nominal.Clone('dSystUp')
+        data_syst_up.Reset()
+        data_syst_dw = data_probe_nominal.Clone('dSystDw')
+        data_syst_dw.Reset()
+        data_stat_up = data_probe_nominal.Clone('dStatUp')
+        data_stat_up.Reset()
+        data_stat_dw = data_probe_nominal.Clone('dStatDw')
+        data_stat_dw.Reset()
+        # isoEnv = isolation envelope
+        hists["data"]["isoEnv"] = data_probe_nominal.Clone('isoEnv')
+        hists["data"]["isoEnv"].Reset()
 
-    # MC:
-    mc_probe_nominal = probe_hists["mc"]["nominal"]
-    mc_syst_up = mc_probe_nominal.Clone('mcSystUp')
-    mc_syst_up.Reset()
-    mc_syst_dw = mc_probe_nominal.Clone('mcSystDw')
-    mc_syst_dw.Reset()
-    mc_stat_up = mc_probe_nominal.Clone('mcStatUp')
-    mc_stat_up.Reset()
-    mc_stat_dw = mc_probe_nominal.Clone('mcStatDw')
-    mc_stat_dw.Reset()
-    hists["mc"]["isoEnv"] = mc_probe_nominal.Clone('isoEnv')
-    hists["mc"]["isoEnv"].Reset()
+        # MC:
+        mc_probe_nominal = probe_hists["mc"]["nominal"]
+        mc_syst_up = mc_probe_nominal.Clone('mcSystUp')
+        mc_syst_up.Reset()
+        mc_syst_dw = mc_probe_nominal.Clone('mcSystDw')
+        mc_syst_dw.Reset()
+        mc_stat_up = mc_probe_nominal.Clone('mcStatUp')
+        mc_stat_up.Reset()
+        mc_stat_dw = mc_probe_nominal.Clone('mcStatDw')
+        mc_stat_dw.Reset()
+        hists["mc"]["isoEnv"] = mc_probe_nominal.Clone('isoEnv')
+        hists["mc"]["isoEnv"].Reset()
 
-    # Number of x- and y-bins - will be used many times
-    # assumed to be the same for data and mc
-    xbins = data_probe_nominal.GetNbinsX()
-    ybins = data_probe_nominal.GetNbinsY()
+        # Number of x- and y-bins - will be used many times
+        # assumed to be the same for data and mc
+        xbins = data_probe_nominal.GetNbinsX()
+        ybins = data_probe_nominal.GetNbinsY()
 
-    # Initialize stat/syst up/down
-    if make_sf_plots:
-        logging.debug("makeSFPlots = True! Will initialize SF hists")
-        sf_hists = {}
-        for k in hists["data"]:
-            sf_hists[k] = hists["data"][k].Clone()
-            sf_hists[k].Reset()
-        sf_stat_up = data_stat_up.Clone()
-        sf_stat_dw = data_stat_dw.Clone()
-        sf_syst_up = data_syst_up.Clone()
-        sf_syst_dw = data_syst_dw.Clone()
-
-    # Initlaize SF value variables and obtain inclusive stat uncertainty
-    if print_sf_values:
-        logging.debug(
-            "printSFValues = True! Will keep track of SF values for each syst")
-        # To get inclusive SF values,
-        # need to add probes and matches across all bins
-        n_data_matches = {}
-        n_data_probes = {}
-        n_mc_matches = {}
-        n_mc_probes = {}
-        sf_values = {}
-        for k in hists["data"]:
-            n_data_matches[k] = 0
-            n_data_probes[k] = 0
-            n_mc_matches[k] = 0
-            n_mc_probes[k] = 0
-            sf_values[k] = 0
-        sf_values["isoEnv"] = 0
-        sf_values["TotSyst"] = 0
-
-        # Inclusive SF stat uncertainty using 1-bin copies of data/mc hists
-        #Data inclusive eff
-        data_match_nominal = match_hists["data"]["nominal"]
-
-        data_match_1_bin = data_match_nominal.Clone()
-        data_match_1_bin.Rebin2D(xbins, ybins)
-        data_probe_1_bin = data_probe_nominal.Clone()
-        data_probe_1_bin.Rebin2D(xbins, ybins)
-        data_eff_1_bin = TEfficiency(data_match_1_bin, data_probe_1_bin)
-
-        data_1_bin = hists["data"]["nominal"].Clone()
-        data_1_bin.Reset()
-        data_1_bin.Rebin2D(xbins, ybins)
-        global_bin = data_eff_1_bin.GetGlobalBin(1, 1)
-        data_eff = data_eff_1_bin.GetEfficiency(global_bin)
-        data_stat_err = data_eff_1_bin.GetEfficiencyErrorUp(global_bin)
-
-        #MC inclusive eff
-        mc_match_nominal = match_hists["mc"]["nominal"]
-        mc_match_1_bin = mc_match_nominal.Clone()
-        mc_match_1_bin.Rebin2D(xbins, ybins)
-        mc_probe_1_bin = mc_probe_nominal.Clone()
-        mc_probe_1_bin.Rebin2D(xbins, ybins)
-        mc_eff_1_bin = TEfficiency(mc_match_1_bin, mc_probe_1_bin)
-
-        mc_1_bin = hists["mc"]["nominal"].Clone()
-        mc_1_bin.Reset()
-        mc_1_bin.Rebin2D(xbins, ybins)
-        mc_eff = mc_eff_1_bin.GetEfficiency(global_bin)
-        mc_stat_err = mc_eff_1_bin.GetEfficiencyErrorUp(global_bin)
-
-        # Error propagation:
-        # err_sf = sf*(err_data_eff/data_eff + err_mc_eff/mc_eff)
-        # TODO: is this the right way to deal with divide-by-zero errors?
-        if mc_eff == 0:
-            logging.warning("MC efficiency is zero -- skipping!")
-            return
-        else:
-            scale_factor = data_eff / mc_eff
-        sfstaterr = 0 if mc_eff == 0 or data_eff == 0 else (scale_factor * (
-            data_stat_err / data_eff + mc_stat_err / mc_eff))
-
-    # Looping through each bin of each histogram
-    # to grab the nominal efficiency and the systematic variations
-    logging.debug('Now starting loop over bins...')
-    for i in range(1, xbins + 2):
-        for j in range(1, ybins + 2):
-            # Debugging particular bin issues
-            # print("Bin : ("+str(i)+","+str(j)+")")
-
-            # Global bin # to used w GetEfficiency()
-            # and GetEfficiencyErrorUp/Low()
-            global_bin = effs["data"]["nominal"].GetGlobalBin(i, j)
-
-            # Getting data, MC nominal efficiency and up/down stat bin errors:
-            dnom = effs["data"]["nominal"].GetEfficiency(global_bin)
-            dstatup = effs["data"]["nominal"].GetEfficiencyErrorUp(global_bin)
-            dstatdw = effs["data"]["nominal"].GetEfficiencyErrorLow(global_bin)
-            mcnom = effs["mc"]["nominal"].GetEfficiency(global_bin)
-            mcstatup = effs["mc"]["nominal"].GetEfficiencyErrorUp(global_bin)
-            mcstatdw = effs["mc"]["nominal"].GetEfficiencyErrorLow(global_bin)
-
-            # Fill nominal + statUp/statDw data, MC efficiency TH2's
-            hists["data"]["nominal"].SetBinContent(i, j, dnom)
-            hists["mc"]["nominal"].SetBinContent(i, j, mcnom)
-            data_stat_up.SetBinContent(i, j, dnom + dstatup)
-            mc_stat_up.SetBinContent(i, j, mcnom + mcstatup)
-            data_stat_dw.SetBinContent(i, j, dnom - dstatdw)
-            mc_stat_dw.SetBinContent(i, j, mcnom - dstatdw)
-
-            # Error propagation for SF stat up/down hists, in each bin
-            if make_sf_plots:
-                if mcnom != 0:
-                    sfbinerrup = (dnom/mcnom) * (dstatup/dnom + mcstatup/mcnom)
-                    sf_stat_up.SetBinContent(i, j, dnom/mcnom + sfbinerrup)
-                    sfbinerrdw = (dnom/mcnom) * (dstatdw/dnom + mcstatdw/mcnom)
-                    sf_stat_dw.SetBinContent(i, j, dnom/mcnom - sfbinerrdw)
-                else:
-                    sf_stat_up.SetBinContent(i, j, 0)
-                    sf_stat_dw.SetBinContent(i, j, 0)
-
-            # Getting data, MC up/down systematic bin errors
-            # Ints to keep track of systematic variations summed in quadrature:
-            dsyst_tot = 0
-            mcsyst_tot = 0
-
-            # Isolation envelope systematic for the bin:
-            # Data
-            dsyst_tight = effs[
-                "data"]["isoTight_VarRad"].GetEfficiency(global_bin)
-            dsyst_tight_pflow = effs[
-                "data"]["isoPflowTight_VarRad"].GetEfficiency(global_bin)
-            if abs(dnom - dsyst_tight) > abs(dnom - dsyst_tight_pflow):
-                dsyst_iso = dnom - dsyst_tight
-                hists["data"]["isoEnv"].SetBinContent(i, j, dsyst_tight)
-            if abs(dnom - dsyst_tight) <= abs(dnom - dsyst_tight_pflow):
-                dsyst_iso = dnom - dsyst_tight_pflow
-                hists["data"]["isoEnv"].SetBinContent(i, j, dsyst_tight_pflow)
-            # Add iso syst in quadrature to total syst bin error
-            dsyst_tot += (dsyst_iso**2)
-
-            # MC
-            mcsyst_tight = effs[
-                "mc"]["isoTight_VarRad"].GetEfficiency(global_bin)
-            mcsyst_tight_pflow = effs[
-                "mc"]["isoPflowTight_VarRad"].GetEfficiency(global_bin)
-            # If tight systematic larger than TTO systematic
-            if abs(mcnom - mcsyst_tight) > abs(mcnom - mcsyst_tight_pflow):
-                mcsyst_iso = mcnom - mcsyst_tight
-                hists["mc"]["isoEnv"].SetBinContent(i, j, mcsyst_tight)
-                #SF inclusive isoEnv value
-                if print_sf_values:
-                    n_data_matches["isoEnv"] += match_hists["data"][
-                        "isoTight_VarRad"].GetBinContent(i, j)
-                    n_data_probes["isoEnv"] += probe_hists["data"][
-                        "isoTight_VarRad"].GetBinContent(i, j)
-                    n_mc_matches["isoEnv"] += match_hists["mc"][
-                        "isoTight_VarRad"].GetBinContent(i, j)
-                    n_mc_probes["isoEnv"] += probe_hists["mc"][
-                        "isoTight_VarRad"].GetBinContent(i, j)
-            # If TTO systematic larger than tight systematic
-            elif abs(mcnom - mcsyst_tight) <= abs(mcnom - mcsyst_tight_pflow):
-                mcsyst_iso = mcnom - mcsyst_tight_pflow
-                hists["mc"]["isoEnv"].SetBinContent(i, j, mcsyst_tight_pflow)
-                # SF inclusive isoEnv value
-                if print_sf_values:
-                    n_data_matches["isoEnv"] += match_hists["data"][
-                        "isoPflowTight_VarRad"].GetBinContent(i, j)
-                    n_data_probes["isoEnv"] += probe_hists["data"][
-                        "isoPflowTight_VarRad"].GetBinContent(i, j)
-                    n_mc_matches["isoEnv"] += match_hists["mc"][
-                        "isoPflowTight_VarRad"].GetBinContent(i, j)
-                    n_mc_probes["isoEnv"] += probe_hists["mc"][
-                        "isoPflowTight_VarRad"].GetBinContent(i, j)
-            # Add iso syst in quadrature to total syst bin error
-            mcsyst_tot += (mcsyst_iso**2)
-
-            # Get non-isolation systematics for the bin:
-            for k in hists["data"]:
-                if ("nominal" not in k and "isoEnv" not in k):
-                    #Data:
-                    dsyst = effs["data"][k].GetEfficiency(global_bin)
-                    hists["data"][k].SetBinContent(i, j, dsyst)
-                    if not k.startswith("iso"):
-                        dsyst_tot += ((dnom - dsyst)**2)
-                    #MC:
-                    mcsyst = effs["mc"][k].GetEfficiency(global_bin)
-                    hists["mc"][k].SetBinContent(i, j, mcsyst)
-                    if not k.startswith("iso"):
-                        mcsyst_tot += ((mcnom - mcsyst)**2)
-                # SF values
-                if print_sf_values and "isoEnv" not in k:
-                    n_data_matches[k] += match_hists[
-                        "data"][k].GetBinContent(i, j)
-                    n_data_probes[k] += probe_hists[
-                        "data"][k].GetBinContent(i, j)
-                    n_mc_matches[k] += match_hists[
-                        "mc"][k].GetBinContent(i, j)
-                    n_mc_probes[k] += probe_hists[
-                        "mc"][k].GetBinContent(i, j)
-
-            # Finally, set the bin content of the
-            # Syst Up/Dw plots = nominal efficiency + total syst variation
-            data_syst_up.SetBinContent(i, j, dnom + math.sqrt(dsyst_tot))
-            data_syst_dw.SetBinContent(i, j, dnom - math.sqrt(dsyst_tot))
-            mc_syst_up.SetBinContent(i, j, mcnom + math.sqrt(mcsyst_tot))
-            mc_syst_dw.SetBinContent(i, j, mcnom - math.sqrt(mcsyst_tot))
-
-            # Fill syst up/down plots
-            if make_sf_plots:
-                if mcnom != 0 and math.sqrt(mcsyst_tot) != 0:
-                    sf_syst_up.SetBinContent(
-                        i, j, (dnom + math.sqrt(dsyst_tot)) / (
-                            mcnom + math.sqrt(mcsyst_tot)))
-                    sf_syst_dw.SetBinContent(
-                        i, j, (dnom - math.sqrt(dsyst_tot)) / (
-                            mcnom - math.sqrt(mcsyst_tot)))
-                else:
-                    sf_syst_up.SetBinContent(i, j, 0)
-                    sf_syst_dw.SetBinContent(i, j, 0)
-                for k in hists["data"]:
-                    sf_hists[k] = hists["data"][k].Clone()
-                    sf_hists[k].Divide(hists["mc"][k])
-
-    # If inclusive SF values requested,
-    # get them by dividing total matches/probes for data and mc
-    if print_sf_values:
-        for k in hists["data"]:
-            # TODO: is this the right way to deal with /0 errors?
-            if n_data_probes[k] == 0 or n_mc_probes[k] == 0:
-                sf_values[k] = 0
-            else:
-                sf_values[k] = (n_data_matches[k] / n_data_probes[k]) / (
-                    n_mc_matches[k] / n_mc_probes[k])
-
-    # Create/update systematics Efficiencies TFile
-    # make efficiency ROOT files
-    if debug:
-        effs_filepath = os.path.join(output_dir, "debug.root")
-        # test output file
-    else:
-        # Change ntuple version to match your inputs!
-        # outfile named in format for SF tool
-        effs_filepath = os.path.join(
-            output_dir, 'muontrigger_sf_20%s_mc%s_%s.root' %
-            (year, montecarlo, version))
-    logging.info("Will output data, MC efficiencies to %s", effs_filepath)
-    effs_file = TFile(effs_filepath, 'update')
-    # Create directory
-    # (trigger may or may not contain _RM, replace does nothing if not)
-    dir_name = quality + "/Period" + period + "/" +\
-        trigger.replace("_RM", "") + "/"
-
-    logging.debug(" - Directory: %s", dir_name)
-    effs_file.mkdir(dir_name)
-    effs_file.cd(dir_name)
-    # Put corresponding plots into working point directory
-    #Data:
-    hists["data"]["nominal"].Write("eff_etaphi_fine_%s_data_nominal" % (
-        region.lower()), TObject.kOverwrite)
-    data_syst_up.Write("eff_etaphi_fine_%s_data_syst_up" % (
-        region.lower()), TObject.kOverwrite)
-    data_syst_dw.Write("eff_etaphi_fine_%s_data_syst_down" % (
-        region.lower()), TObject.kOverwrite)
-    data_stat_up.Write("eff_etaphi_fine_%s_data_stat_up" % (
-        region.lower()), TObject.kOverwrite)
-    data_stat_dw.Write("eff_etaphi_fine_%s_data_stat_down" % (
-        region.lower()), TObject.kOverwrite)
-    for k in sorted(hists["data"].keys()):
-        if k != "dnominal":
-            hists["data"][k].Write("eff_etaphi_fine_%s_data_%s" % (
-                region.lower(), k), TObject.kOverwrite)
-    #MC:
-    hists["mc"]["nominal"].Write("eff_etaphi_fine_%s_mc_nominal" % (
-        region.lower()), TObject.kOverwrite)
-    mc_syst_up.Write("eff_etaphi_fine_%s_mc_syst_up" % (
-        region.lower()), TObject.kOverwrite)
-    mc_syst_dw.Write("eff_etaphi_fine_%s_mc_syst_down" % (
-        region.lower()), TObject.kOverwrite)
-    mc_stat_up.Write("eff_etaphi_fine_%s_mc_stat_up" % (
-        region.lower()), TObject.kOverwrite)
-    mc_stat_dw.Write("eff_etaphi_fine_%s_mc_stat_down" % (
-        region.lower()), TObject.kOverwrite)
-    for k in sorted(hists["mc"].keys()):
-        if k != "nominal":
-            hists["mc"][k].Write("eff_etaphi_fine_%s_mc_%s" % (
-                region.lower(), k), TObject.kOverwrite)
-
-    # Save all data, mc (and SF, if SF plots made) hists as pngs
-    if save_pngs:
-        # Directory
-        png_outdir = os.path.join(output_dir, "savePNGs_%s/" % (year))
-        logging.info("savePNGs = True! Will save PNGs to: %s", png_outdir)
-        if not os.path.exists(png_outdir):
-            os.mkdir(png_outdir)
-        # prefix for hist titles
-        title_prefix = "%s_%s_%s_etaphi_fine_%s_" % (
-            quality, period, trigger.replace("_RM", ""), region.lower())
-        gROOT.SetBatch()
-        # Data stat/syst up/down
-        draw_hist(png_outdir, title_prefix, data_syst_up, "dataEff_syst_up")
-        draw_hist(png_outdir, title_prefix, data_syst_dw, "dataEff_syst_dw")
-        draw_hist(png_outdir, title_prefix, data_stat_up, "dataEff_stat_up")
-        draw_hist(png_outdir, title_prefix, data_stat_dw, "dataEff_stat_dw")
-        # MC stat/syst up/down
-        draw_hist(png_outdir, title_prefix, mc_syst_up, "mcEff_syst_up")
-        draw_hist(png_outdir, title_prefix, mc_syst_dw, "mcEff_syst_dw")
-        draw_hist(png_outdir, title_prefix, mc_stat_up, "mcEff_stat_up")
-        draw_hist(png_outdir, title_prefix, mc_stat_dw, "mcEff_stat_dw")
-        # SF stat/syst up/down
+        # Initialize stat/syst up/down
         if make_sf_plots:
-            draw_hist(png_outdir, title_prefix, sf_syst_up, "SF_syst_up")
-            draw_hist(png_outdir, title_prefix, sf_syst_dw, "SF_syst_dw")
-            draw_hist(png_outdir, title_prefix, sf_stat_up, "SF_stat_up")
-            draw_hist(png_outdir, title_prefix, sf_stat_dw, "SF_stat_dw")
-        # Everything else
-        for k in hists["data"]:
-            draw_hist(
-                png_outdir, title_prefix,
-                hists["data"][k], "dataEff_{}".format(k))
-            draw_hist(
-                png_outdir, title_prefix,
-                hists["mc"][k], "mcEff_{}".format(k))
-            if make_sf_plots:
-                draw_hist(png_outdir, title_prefix, sf_hists[k], "SF_{}".format(k))
+            logging.debug("makeSFPlots = True! Will initialize SF hists")
+            sf_hists = {}
+            for k in hists["data"]:
+                sf_hists[k] = hists["data"][k].Clone()
+                sf_hists[k].Reset()
+            sf_stat_up = data_stat_up.Clone()
+            sf_stat_dw = data_stat_dw.Clone()
+            sf_syst_up = data_syst_up.Clone()
+            sf_syst_dw = data_syst_dw.Clone()
 
-    # Create separate SF TFile
-    if make_sf_plots:
+        # Initlaize SF value variables and obtain inclusive stat uncertainty
+        if print_sf_values:
+            logging.debug(
+                "printSFValues = True! \
+                Will keep track of SF values for each syst")
+            # To get inclusive SF values,
+            # need to add probes and matches across all bins
+            n_data_matches = {}
+            n_data_probes = {}
+            n_mc_matches = {}
+            n_mc_probes = {}
+            sf_values = {}
+            for k in hists["data"]:
+                n_data_matches[k] = 0
+                n_data_probes[k] = 0
+                n_mc_matches[k] = 0
+                n_mc_probes[k] = 0
+                sf_values[k] = 0
+            sf_values["isoEnv"] = 0
+            sf_values["TotSyst"] = 0
+
+            # Inclusive SF stat uncertainty using 1-bin copies of data/mc hists
+            #Data inclusive eff
+            data_match_nominal = match_hists["data"]["nominal"]
+
+            data_match_1_bin = data_match_nominal.Clone()
+            data_match_1_bin.Rebin2D(xbins, ybins)
+            data_probe_1_bin = data_probe_nominal.Clone()
+            data_probe_1_bin.Rebin2D(xbins, ybins)
+            data_eff_1_bin = TEfficiency(data_match_1_bin, data_probe_1_bin)
+
+            data_1_bin = hists["data"]["nominal"].Clone()
+            data_1_bin.Reset()
+            data_1_bin.Rebin2D(xbins, ybins)
+            global_bin = data_eff_1_bin.GetGlobalBin(1, 1)
+            data_eff = data_eff_1_bin.GetEfficiency(global_bin)
+            data_stat_err = data_eff_1_bin.GetEfficiencyErrorUp(global_bin)
+
+            #MC inclusive eff
+            mc_match_nominal = match_hists["mc"]["nominal"]
+            mc_match_1_bin = mc_match_nominal.Clone()
+            mc_match_1_bin.Rebin2D(xbins, ybins)
+            mc_probe_1_bin = mc_probe_nominal.Clone()
+            mc_probe_1_bin.Rebin2D(xbins, ybins)
+            mc_eff_1_bin = TEfficiency(mc_match_1_bin, mc_probe_1_bin)
+
+            mc_1_bin = hists["mc"]["nominal"].Clone()
+            mc_1_bin.Reset()
+            mc_1_bin.Rebin2D(xbins, ybins)
+            mc_eff = mc_eff_1_bin.GetEfficiency(global_bin)
+            mc_stat_err = mc_eff_1_bin.GetEfficiencyErrorUp(global_bin)
+
+            # Error propagation:
+            # err_sf = sf*(err_data_eff/data_eff + err_mc_eff/mc_eff)
+            # TODO: is this the right way to deal with divide-by-zero errors?
+            if mc_eff == 0:
+                logging.warning("MC efficiency is zero -- skipping!")
+                return
+            else:
+                scale_factor = data_eff / mc_eff
+            sfstaterr = 0 if mc_eff == 0 or data_eff == 0 else (
+                scale_factor * (data_stat_err/data_eff + mc_stat_err/mc_eff))
+
+        # Looping through each bin of each histogram
+        # to grab the nominal efficiency and the systematic variations
+        logging.debug('Now starting loop over bins...')
+        for i in range(1, xbins + 2):
+            for j in range(1, ybins + 2):
+                # Debugging particular bin issues
+                # print("Bin : ("+str(i)+","+str(j)+")")
+
+                # Global bin # to used w GetEfficiency()
+                # and GetEfficiencyErrorUp/Low()
+                global_bin = effs["data"]["nominal"].GetGlobalBin(i, j)
+
+                # Getting data, MC nominal efficiency and up/down stat bin errors:
+                dnom = effs[
+                    "data"]["nominal"].GetEfficiency(global_bin)
+                dstatup = effs[
+                    "data"]["nominal"].GetEfficiencyErrorUp(global_bin)
+                dstatdw = effs[
+                    "data"]["nominal"].GetEfficiencyErrorLow(global_bin)
+                mcnom = effs[
+                    "mc"]["nominal"].GetEfficiency(global_bin)
+                mcstatup = effs[
+                    "mc"]["nominal"].GetEfficiencyErrorUp(global_bin)
+                mcstatdw = effs[
+                    "mc"]["nominal"].GetEfficiencyErrorLow(global_bin)
+
+                # Fill nominal + statUp/statDw data, MC efficiency TH2's
+                hists["data"]["nominal"].SetBinContent(i, j, dnom)
+                hists["mc"]["nominal"].SetBinContent(i, j, mcnom)
+                data_stat_up.SetBinContent(i, j, dnom + dstatup)
+                mc_stat_up.SetBinContent(i, j, mcnom + mcstatup)
+                data_stat_dw.SetBinContent(i, j, dnom - dstatdw)
+                mc_stat_dw.SetBinContent(i, j, mcnom - dstatdw)
+
+                # Error propagation for SF stat up/down hists, in each bin
+                if make_sf_plots:
+                    if mcnom != 0:
+                        sfbinerrup = (dnom/mcnom) * (
+                            dstatup/dnom + mcstatup/mcnom)
+                        sf_stat_up.SetBinContent(i, j, dnom/mcnom + sfbinerrup)
+                        sfbinerrdw = (dnom/mcnom) * (
+                            dstatdw/dnom + mcstatdw/mcnom)
+                        sf_stat_dw.SetBinContent(i, j, dnom/mcnom - sfbinerrdw)
+                    else:
+                        sf_stat_up.SetBinContent(i, j, 0)
+                        sf_stat_dw.SetBinContent(i, j, 0)
+
+                # Getting data, MC up/down systematic bin errors
+                # Ints to keep track of syst variations summed in quadrature:
+                dsyst_tot = 0
+                mcsyst_tot = 0
+
+                # Isolation envelope systematic for the bin:
+                # Data
+                dsyst_tight = effs[
+                    "data"]["isoTight_VarRad"].GetEfficiency(global_bin)
+                dsyst_tight_pf = effs[
+                    "data"]["isoPflowTight_VarRad"].GetEfficiency(global_bin)
+                if abs(dnom - dsyst_tight) > abs(dnom - dsyst_tight_pf):
+                    dsyst_iso = dnom - dsyst_tight
+                    hists["data"]["isoEnv"].SetBinContent(i, j, dsyst_tight)
+                if abs(dnom - dsyst_tight) <= abs(dnom - dsyst_tight_pf):
+                    dsyst_iso = dnom - dsyst_tight_pf
+                    hists["data"]["isoEnv"].SetBinContent(
+                        i, j, dsyst_tight_pf)
+                # Add iso syst in quadrature to total syst bin error
+                dsyst_tot += (dsyst_iso**2)
+
+                # MC
+                mcsyst_tight = effs[
+                    "mc"]["isoTight_VarRad"].GetEfficiency(global_bin)
+                mcsyst_tight_pf = effs[
+                    "mc"]["isoPflowTight_VarRad"].GetEfficiency(global_bin)
+                # If tight systematic larger than TTO systematic
+                if abs(mcnom - mcsyst_tight) > abs(mcnom - mcsyst_tight_pf):
+                    mcsyst_iso = mcnom - mcsyst_tight
+                    hists["mc"]["isoEnv"].SetBinContent(i, j, mcsyst_tight)
+                    #SF inclusive isoEnv value
+                    if print_sf_values:
+                        n_data_matches["isoEnv"] += match_hists["data"][
+                            "isoTight_VarRad"].GetBinContent(i, j)
+                        n_data_probes["isoEnv"] += probe_hists["data"][
+                            "isoTight_VarRad"].GetBinContent(i, j)
+                        n_mc_matches["isoEnv"] += match_hists["mc"][
+                            "isoTight_VarRad"].GetBinContent(i, j)
+                        n_mc_probes["isoEnv"] += probe_hists["mc"][
+                            "isoTight_VarRad"].GetBinContent(i, j)
+                # If TTO systematic larger than tight systematic
+                elif abs(mcnom - mcsyst_tight) <= abs(mcnom - mcsyst_tight_pf):
+                    mcsyst_iso = mcnom - mcsyst_tight_pf
+                    hists["mc"]["isoEnv"].SetBinContent(i, j, mcsyst_tight_pf)
+                    # SF inclusive isoEnv value
+                    if print_sf_values:
+                        n_data_matches["isoEnv"] += match_hists["data"][
+                            "isoPflowTight_VarRad"].GetBinContent(i, j)
+                        n_data_probes["isoEnv"] += probe_hists["data"][
+                            "isoPflowTight_VarRad"].GetBinContent(i, j)
+                        n_mc_matches["isoEnv"] += match_hists["mc"][
+                            "isoPflowTight_VarRad"].GetBinContent(i, j)
+                        n_mc_probes["isoEnv"] += probe_hists["mc"][
+                            "isoPflowTight_VarRad"].GetBinContent(i, j)
+                # Add iso syst in quadrature to total syst bin error
+                mcsyst_tot += (mcsyst_iso**2)
+
+                # Get non-isolation systematics for the bin:
+                for k in hists["data"]:
+                    if ("nominal" not in k and "isoEnv" not in k):
+                        #Data:
+                        dsyst = effs["data"][k].GetEfficiency(global_bin)
+                        hists["data"][k].SetBinContent(i, j, dsyst)
+                        if not k.startswith("iso"):
+                            dsyst_tot += ((dnom - dsyst)**2)
+                        #MC:
+                        mcsyst = effs["mc"][k].GetEfficiency(global_bin)
+                        hists["mc"][k].SetBinContent(i, j, mcsyst)
+                        if not k.startswith("iso"):
+                            mcsyst_tot += ((mcnom - mcsyst)**2)
+                    # SF values
+                    if print_sf_values and "isoEnv" not in k:
+                        n_data_matches[k] += match_hists[
+                            "data"][k].GetBinContent(i, j)
+                        n_data_probes[k] += probe_hists[
+                            "data"][k].GetBinContent(i, j)
+                        n_mc_matches[k] += match_hists[
+                            "mc"][k].GetBinContent(i, j)
+                        n_mc_probes[k] += probe_hists[
+                            "mc"][k].GetBinContent(i, j)
+
+                # Finally, set the bin content of the
+                # Syst Up/Dw plots = nominal efficiency + total syst variation
+                data_syst_up.SetBinContent(i, j, dnom + math.sqrt(dsyst_tot))
+                data_syst_dw.SetBinContent(i, j, dnom - math.sqrt(dsyst_tot))
+                mc_syst_up.SetBinContent(i, j, mcnom + math.sqrt(mcsyst_tot))
+                mc_syst_dw.SetBinContent(i, j, mcnom - math.sqrt(mcsyst_tot))
+
+                # Fill syst up/down plots
+                if make_sf_plots:
+                    if mcnom != 0 and math.sqrt(mcsyst_tot) != 0:
+                        sf_syst_up.SetBinContent(
+                            i, j, (dnom + math.sqrt(dsyst_tot)) / (
+                                mcnom + math.sqrt(mcsyst_tot)))
+                        sf_syst_dw.SetBinContent(
+                            i, j, (dnom - math.sqrt(dsyst_tot)) / (
+                                mcnom - math.sqrt(mcsyst_tot)))
+                    else:
+                        sf_syst_up.SetBinContent(i, j, 0)
+                        sf_syst_dw.SetBinContent(i, j, 0)
+                    for k in hists["data"]:
+                        sf_hists[k] = hists["data"][k].Clone()
+                        sf_hists[k].Divide(hists["mc"][k])
+
+        # If inclusive SF values requested,
+        # get them by dividing total matches/probes for data and mc
+        if print_sf_values:
+            for k in hists["data"]:
+                # TODO: is this the right way to deal with /0 errors?
+                if n_data_probes[k] == 0 or n_mc_probes[k] == 0:
+                    sf_values[k] = 0
+                else:
+                    sf_values[k] = (n_data_matches[k] / n_data_probes[k]) / (
+                        n_mc_matches[k] / n_mc_probes[k])
+
+        # Create/update systematics Efficiencies TFile
+        # make efficiency ROOT files
         if debug:
-            sf_filename = "debug_SF.root"
+            effs_filepath = os.path.join(output_dir, "debug.root")
+            # test output file
         else:
-            sf_filename = "SFPlots_%s_%s.root" % (year, version)
-        sf_filepath = os.path.join(output_dir, sf_filename)
-        logging.info(" ---> Will output SFs to file %s", sf_filepath)
-        sf_file = TFile(sf_filepath, 'update')
-        dir_name = quality + "/Period" + period + "/" + trigger + "/"
+            # Change ntuple version to match your inputs!
+            # outfile named in format for SF tool
+            effs_filepath = os.path.join(
+                output_dir, 'muontrigger_sf_20%s_mc%s_%s.root' %
+                (year, montecarlo, version))
+        logging.info("Will output data, MC efficiencies to %s", effs_filepath)
+        effs_file = TFile(effs_filepath, 'update')
+        # Create directory
+        # (trigger may or may not contain _RM, replace does nothing if not)
+        dir_name = quality + "/Period" + period + "/" +\
+            trigger.replace("_RM", "") + "/"
+
         logging.debug(" - Directory: %s", dir_name)
-        sf_file.mkdir(dir_name)
-        sf_file.cd(dir_name)
-        sf_hists["nominal"].Write("sf_%s_nominal" % (region.lower()))
-        sf_syst_up.Write("sf_%s_syst_up" % (
+        effs_file.mkdir(dir_name)
+        effs_file.cd(dir_name)
+        # Put corresponding plots into working point directory
+        #Data:
+        hists["data"]["nominal"].Write("eff_etaphi_fine_%s_data_nominal" % (
             region.lower()), TObject.kOverwrite)
-        sf_syst_dw.Write("sf_%s_syst_down" % (
+        data_syst_up.Write("eff_etaphi_fine_%s_data_syst_up" % (
             region.lower()), TObject.kOverwrite)
-        sf_stat_up.Write("sf_%s_stat_up" % (
+        data_syst_dw.Write("eff_etaphi_fine_%s_data_syst_down" % (
             region.lower()), TObject.kOverwrite)
-        sf_stat_dw.Write("sf_%s_stat_down" % (
+        data_stat_up.Write("eff_etaphi_fine_%s_data_stat_up" % (
             region.lower()), TObject.kOverwrite)
-        for k in sorted(sf_hists.keys()):
+        data_stat_dw.Write("eff_etaphi_fine_%s_data_stat_down" % (
+            region.lower()), TObject.kOverwrite)
+        for k in sorted(hists["data"].keys()):
+            if k != "dnominal":
+                hists["data"][k].Write("eff_etaphi_fine_%s_data_%s" % (
+                    region.lower(), k), TObject.kOverwrite)
+        #MC:
+        hists["mc"]["nominal"].Write("eff_etaphi_fine_%s_mc_nominal" % (
+            region.lower()), TObject.kOverwrite)
+        mc_syst_up.Write("eff_etaphi_fine_%s_mc_syst_up" % (
+            region.lower()), TObject.kOverwrite)
+        mc_syst_dw.Write("eff_etaphi_fine_%s_mc_syst_down" % (
+            region.lower()), TObject.kOverwrite)
+        mc_stat_up.Write("eff_etaphi_fine_%s_mc_stat_up" % (
+            region.lower()), TObject.kOverwrite)
+        mc_stat_dw.Write("eff_etaphi_fine_%s_mc_stat_down" % (
+            region.lower()), TObject.kOverwrite)
+        for k in sorted(hists["mc"].keys()):
             if k != "nominal":
-                sf_hists[k].Write("sf_%s_%s" % (
+                hists["mc"][k].Write("eff_etaphi_fine_%s_mc_%s" % (
                     region.lower(), k), TObject.kOverwrite)
 
-    # Print inclusive SF for nominal, systematic plots
-    if print_sf_values:
-        print("Scale Factor Values: " + ", ".join([
-            trigger, region, quality, year, period]))
-        placeholder = 0
-        print("{:<15} {:<15} {:<15}".format('Systematic', 'Value', '% Diff'))
-        print("{:<15} {:<15} {:<15} {:<15}".format(
-            "nominal", round(sf_values["nominal"], 5),
-            "N/A", "Stat Error: " + str(sfstaterr)))
-        for k, sf_val in sorted(sf_values.items()):
-            if (k != "nominal" and k != "TotSyst"):
-                placeholder += (sf_val - sf_values["nominal"])**2
-                sf_rounded = round(sf_val, 5)
-                pct_diff = -1 if sf_values["nominal"] == 0 else round((
-                    sf_val - sf_values["nominal"]) / sf_values["nominal"],
-                    5) * 100
-                print("{:<15} {:<15} {:<15}".format(
-                    k, sf_rounded, pct_diff))
-        sf_values["TotSyst"] = sf_values["nominal"] + math.sqrt(placeholder)
-        tot_sf_rounded = round(sf_values["TotSyst"], 5)
-        tot_pct_diff = -1 if sf_values["nominal"] == 0 else round(
-            (sf_values["TotSyst"]-sf_values["nominal"]
-            )/sf_values["nominal"], 5) * 100
-        print(
-            "{:<15} {:<15} {:<15}".format(
-                "Total", tot_sf_rounded, tot_pct_diff))
+        # Save all data, mc (and SF, if SF plots made) hists as pngs
+        if save_pngs:
+            # Directory
+            png_outdir = os.path.join(output_dir, "savePNGs_%s/" % (year))
+            logging.info("savePNGs = True! Will save PNGs to: %s", png_outdir)
+            if not os.path.exists(png_outdir):
+                os.mkdir(png_outdir)
+            # prefix for hist titles
+            title_prefix = "%s_%s_%s_etaphi_fine_%s_" % (
+                quality, period, trigger.replace("_RM", ""), region.lower())
+            gROOT.SetBatch()
+            # Data stat/syst up/down
+            draw_hist(
+                png_outdir, title_prefix, data_syst_up, "dataEff_syst_up")
+            draw_hist(
+                png_outdir, title_prefix, data_syst_dw, "dataEff_syst_dw")
+            draw_hist(
+                png_outdir, title_prefix, data_stat_up, "dataEff_stat_up")
+            draw_hist(
+                png_outdir, title_prefix, data_stat_dw, "dataEff_stat_dw")
+            # MC stat/syst up/down
+            draw_hist(png_outdir, title_prefix, mc_syst_up, "mcEff_syst_up")
+            draw_hist(png_outdir, title_prefix, mc_syst_dw, "mcEff_syst_dw")
+            draw_hist(png_outdir, title_prefix, mc_stat_up, "mcEff_stat_up")
+            draw_hist(png_outdir, title_prefix, mc_stat_dw, "mcEff_stat_dw")
+            # SF stat/syst up/down
+            if make_sf_plots:
+                draw_hist(png_outdir, title_prefix, sf_syst_up, "SF_syst_up")
+                draw_hist(png_outdir, title_prefix, sf_syst_dw, "SF_syst_dw")
+                draw_hist(png_outdir, title_prefix, sf_stat_up, "SF_stat_up")
+                draw_hist(png_outdir, title_prefix, sf_stat_dw, "SF_stat_dw")
+            # Everything else
+            for k in hists["data"]:
+                draw_hist(
+                    png_outdir, title_prefix,
+                    hists["data"][k], "dataEff_{}".format(k))
+                draw_hist(
+                    png_outdir, title_prefix,
+                    hists["mc"][k], "mcEff_{}".format(k))
+                if make_sf_plots:
+                    draw_hist(
+                        png_outdir, title_prefix,
+                        sf_hists[k], "SF_{}".format(k))
+
+        # Create separate SF TFile
+        if make_sf_plots:
+            if debug:
+                sf_filename = "debug_SF.root"
+            else:
+                sf_filename = "SFPlots_%s_%s.root" % (year, version)
+            sf_filepath = os.path.join(output_dir, sf_filename)
+            logging.info(" ---> Will output SFs to file %s", sf_filepath)
+            sf_file = TFile(sf_filepath, 'update')
+            dir_name = quality + "/Period" + period + "/" + trigger + "/"
+            logging.debug(" - Directory: %s", dir_name)
+            sf_file.mkdir(dir_name)
+            sf_file.cd(dir_name)
+            sf_hists["nominal"].Write("sf_%s_nominal" % (region.lower()))
+            sf_syst_up.Write("sf_%s_syst_up" % (
+                region.lower()), TObject.kOverwrite)
+            sf_syst_dw.Write("sf_%s_syst_down" % (
+                region.lower()), TObject.kOverwrite)
+            sf_stat_up.Write("sf_%s_stat_up" % (
+                region.lower()), TObject.kOverwrite)
+            sf_stat_dw.Write("sf_%s_stat_down" % (
+                region.lower()), TObject.kOverwrite)
+            for k in sorted(sf_hists.keys()):
+                if k != "nominal":
+                    sf_hists[k].Write("sf_%s_%s" % (
+                        region.lower(), k), TObject.kOverwrite)
+
+        # Print inclusive SF for nominal, systematic plots
+        if print_sf_values:
+            print("Scale Factor Values: " + ", ".join([
+                trigger, region, quality, year, period]))
+            placeholder = 0
+            print("{:<15} {:<15} {:<15}".format(
+                'Systematic', 'Value', '% Diff'))
+            print("{:<15} {:<15} {:<15} {:<15}".format(
+                "nominal", round(sf_values["nominal"], 5),
+                "N/A", "Stat Error: " + str(sfstaterr)))
+            for k, sf_val in sorted(sf_values.items()):
+                if (k != "nominal" and k != "TotSyst"):
+                    placeholder += (sf_val - sf_values["nominal"])**2
+                    sf_rounded = round(sf_val, 5)
+                    if sf_values["nominal"] == 0:
+                        pct_diff = -1
+                    else:
+                        pct_diff = round(
+                            (sf_val - sf_values["nominal"]) / sf_values[
+                                "nominal"], 5) * 100
+                    print("{:<15} {:<15} {:<15}".format(
+                        k, sf_rounded, pct_diff))
+            sf_values["TotSyst"] = sf_values["nominal"] + math.sqrt(
+                placeholder)
+            tot_sf_rounded = round(sf_values["TotSyst"], 5)
+            tot_pct_diff = -1 if sf_values["nominal"] == 0 else round(
+                (sf_values["TotSyst"]-sf_values["nominal"]
+                )/sf_values["nominal"], 5) * 100
+            print(
+                "{:<15} {:<15} {:<15}".format(
+                    "Total", tot_sf_rounded, tot_pct_diff))
 
 
 def run_over_everything():
