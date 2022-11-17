@@ -195,7 +195,7 @@ def main():
         root_files[d_mc][year] = {}
         root_files[d_mc][year][period] = {}
         for var in c.VARIATIONS:
-            var_conf_name = d_mc+str(year)+"_".join(
+            var_conf_name = d_mc+str(year)+"_"+"_".join(
                 [period, var, version, trigger_type])+".root"
             var_conf = os.path.join(input_dir, var_conf_name)
             if not os.path.exists(var_conf):
