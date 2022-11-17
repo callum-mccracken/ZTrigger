@@ -73,6 +73,8 @@ gROOT.LoadMacro('AtlasLabels.C')
 if gROOT.LoadMacro('AtlasStyle.C') > 0:
     SetAtlasStyle()
 
+DEFAULT_IN_DIR = '../../../../../output/'
+DEFAULT_OUT_DIR = '../../../../../run/'
 
 def draw_hist(out_dir, title_prefix, hist, name):
     """Make a histogram."""
@@ -111,10 +113,12 @@ def get_options():
     parser.add_option('--debug', action='store_true', default=False,
                       dest='debug')
     # path to directory where inputs (outputs of WTPH) are stored
-    parser.add_option('-i', '--inDir', type='string', default='./',
+    parser.add_option('-i', '--inDir', type='string',
+                      default=DEFAULT_IN_DIR,
                       dest='inDir')
     # path to directory where you want the output(s) of the script to be stored
-    parser.add_option('-o', '--outDir', type='string', default='./',
+    parser.add_option('-o', '--outDir', type='string',
+                      default=DEFAULT_OUT_DIR,
                       dest='outDir')
     # year: 2015, 2016, 2017, or 2018
     parser.add_option('-y', '--year', type='string', default=None,
@@ -148,13 +152,18 @@ def get_options():
     if options.period is None:
         print("using default period: B")
         options.period = "B"
+    if options.region is None:
+        print("using default region: Barrel")
+        options.region = "Barrel"
     if options.trigger is None:
         print("using defualt trigger: HLT_mu26_ivarmedium")
         options.trigger = "HLT_mu26_ivarmedium"
     if options.quality is None:
         print("using defualt quality: Medium")
         options.quality = "Medium"
-
+    if options.version is None:
+        print("using defualt ntuple version: v66.3.0")
+        options.version = "v66.3.0"
     return options
 
 
@@ -164,12 +173,16 @@ def main():
 
     year = options.year
     period = options.period
-    quality = options.quality
+    region = options.region
     trigger = options.trigger
+    quality = options.quality
+    version = options.version
+    input_dir = options.inDir
 
     # Load input files
-    logging.debug("Looking for input files in directory: %s", options.inDir)
-    input_files = os.listdir(options.inDir)
+    logging.debug("Looking for input files in directory: %s", input_dir)
+    input_files = os.listdir(input_dir)
+    print("Found", len(input_files), "in directory", input_dir)
 
     # for storing actual file data
     root_files = {
