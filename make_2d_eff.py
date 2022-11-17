@@ -630,40 +630,40 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     # Save all data, mc (and SF, if SF plots made) hists as pngs
     if save_pngs:
         # Directory
-        outdir = "./savePNGs_%s/" % (year)
-        logging.debug("savePNGs = True! Will save PNGs to: %s", outdir)
-        if not os.path.exists(outdir):
-            os.mkdir(outdir)
+        png_outdir = os.path.join(output_dir, "savePNGs_%s/" % (year))
+        logging.info("savePNGs = True! Will save PNGs to: %s", png_outdir)
+        if not os.path.exists(png_outdir):
+            os.mkdir(png_outdir)
         # prefix for hist titles
         title_prefix = "%s_%s_%s_etaphi_fine_%s_" % (
             quality, period, trigger.replace("_RM", ""), region.lower())
         gROOT.SetBatch()
         # Data stat/syst up/down
-        draw_hist(outdir, title_prefix, data_syst_up, "dataEff_syst_up")
-        draw_hist(outdir, title_prefix, data_syst_dw, "dataEff_syst_dw")
-        draw_hist(outdir, title_prefix, data_stat_up, "dataEff_stat_up")
-        draw_hist(outdir, title_prefix, data_stat_dw, "dataEff_stat_dw")
+        draw_hist(png_outdir, title_prefix, data_syst_up, "dataEff_syst_up")
+        draw_hist(png_outdir, title_prefix, data_syst_dw, "dataEff_syst_dw")
+        draw_hist(png_outdir, title_prefix, data_stat_up, "dataEff_stat_up")
+        draw_hist(png_outdir, title_prefix, data_stat_dw, "dataEff_stat_dw")
         # MC stat/syst up/down
-        draw_hist(outdir, title_prefix, mc_syst_up, "mcEff_syst_up")
-        draw_hist(outdir, title_prefix, mc_syst_dw, "mcEff_syst_dw")
-        draw_hist(outdir, title_prefix, mc_stat_up, "mcEff_stat_up")
-        draw_hist(outdir, title_prefix, mc_stat_dw, "mcEff_stat_dw")
+        draw_hist(png_outdir, title_prefix, mc_syst_up, "mcEff_syst_up")
+        draw_hist(png_outdir, title_prefix, mc_syst_dw, "mcEff_syst_dw")
+        draw_hist(png_outdir, title_prefix, mc_stat_up, "mcEff_stat_up")
+        draw_hist(png_outdir, title_prefix, mc_stat_dw, "mcEff_stat_dw")
         # SF stat/syst up/down
         if make_sf_plots:
-            draw_hist(outdir, title_prefix, sf_syst_up, "SF_syst_up")
-            draw_hist(outdir, title_prefix, sf_syst_dw, "SF_syst_dw")
-            draw_hist(outdir, title_prefix, sf_stat_up, "SF_stat_up")
-            draw_hist(outdir, title_prefix, sf_stat_dw, "SF_stat_dw")
+            draw_hist(png_outdir, title_prefix, sf_syst_up, "SF_syst_up")
+            draw_hist(png_outdir, title_prefix, sf_syst_dw, "SF_syst_dw")
+            draw_hist(png_outdir, title_prefix, sf_stat_up, "SF_stat_up")
+            draw_hist(png_outdir, title_prefix, sf_stat_dw, "SF_stat_dw")
         # Everything else
         for k in hists["data"]:
             draw_hist(
-                outdir, title_prefix,
+                png_outdir, title_prefix,
                 hists["data"][k], "dataEff_{}".format(k))
             draw_hist(
-                outdir, title_prefix,
+                png_outdir, title_prefix,
                 hists["mc"][k], "mcEff_{}".format(k))
             if make_sf_plots:
-                draw_hist(outdir, title_prefix, sf_hists[k], "SF_{}".format(k))
+                draw_hist(png_outdir, title_prefix, sf_hists[k], "SF_{}".format(k))
 
     # Create separate SF TFile
     if make_sf_plots:
@@ -671,36 +671,9 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
             sf_filename = "debug_SF.root"
         else:
             sf_filename = "SFPlots_%s_%s.root" % (year, version)
-        logging.debug(" ---> Will output SFs to file %s", sf_filename)
-
-        sf_file = TFile(sf_filename, 'update')
-        dir_name = quality + "/Period" + period + "/" + trigger + "/"
-        logging.debug(" - Directory: %s", dir_name)
-        sf_file.mkdir(dir_name)
-        sf_file.cd(dir_name)
-        sf_hists["nominal"].Write("sf_%s_nominal" % (region.lower()))
-        sf_syst_up.Write("sf_%s_syst_up" % (
-            region.lower()), TObject.kOverwrite)
-        sf_syst_dw.Write("sf_%s_syst_down" % (
-            region.lower()), TObject.kOverwrite)
-        sf_stat_up.Write("sf_%s_stat_up" % (
-            region.lower()), TObject.kOverwrite)
-        sf_stat_dw.Write("sf_%s_stat_down" % (
-            region.lower()), TObject.kOverwrite)
-        for k in sorted(sf_hists.keys()):
-            if k != "nominal":
-                sf_hists[k].Write("sf_%s_%s" % (
-                    region.lower(), k), TObject.kOverwrite)
-
-    # Create separate SF TFile
-    if make_sf_plots:
-        if debug:
-            logging.debug("Will output SFs to file debug_SF.root")
-            sf_filename = 'debug_SF.root'
-        else:
-            # Change ntuple version to match your inputs!
-            sf_filename = 'SFPlots_%s_%s.root' % (year, version)
-        sf_file = TFile(sf_filename, 'update')
+        sf_filepath = os.path.join(output_dir, sf_filename)
+        logging.info(" ---> Will output SFs to file %s", sf_filepath)
+        sf_file = TFile(sf_filepath, 'update')
         dir_name = quality + "/Period" + period + "/" + trigger + "/"
         logging.debug(" - Directory: %s", dir_name)
         sf_file.mkdir(dir_name)
