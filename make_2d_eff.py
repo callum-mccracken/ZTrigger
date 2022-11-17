@@ -287,7 +287,7 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
             # get probe hist, raise error if not found
             probe_branch = os.path.join(probe_dir, probe_hist)
             probe_hists[d_mc][var] = var_file.Get(probe_branch)
-            print(probe_hists[d_mc][var])
+            print(type(probe_hists[d_mc][var]))
             if not probe_hists[d_mc][var]:
                 raise ValueError(
                     "Couldn't find {}. Does this really exist in {}?\n".format(
