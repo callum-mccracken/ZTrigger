@@ -280,7 +280,8 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     #     "muneg", "mupos", "noIP", "nvtx_dw", "nvtx_up", "ptdw", "ptup",
     #     "isoPflowLoose_VarRad", "isoPflowTight_VarRad",
     #     "isoLoose_VarRad", "isoTight_VarRad"]
-
+    print("Using nominal data file", var_conf_fmt.format(
+        data_mc="data", variation="nominal"))
     data_nominal = TFile(var_conf_fmt.format(
         data_mc="data", variation="nominal"))
     data_dphill = TFile(var_conf_fmt.format(
