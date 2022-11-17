@@ -501,6 +501,9 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
         mc_1_bin.Reset()
         mc_1_bin.Rebin2D(xbins, ybins)
         mc_eff = mc_eff_1_bin.GetEfficiency(global_bin)
+        print(type(mc_match_1_bin), type(mc_probe_1_bin))
+        print(type(mc_eff_1_bin))
+        print(mc_eff)
         mc_stat_err = mc_eff_1_bin.GetEfficiencyErrorUp(global_bin)
 
         # Error propagation:
