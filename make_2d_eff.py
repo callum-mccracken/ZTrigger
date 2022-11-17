@@ -836,7 +836,7 @@ def run_over_everything():
                             input_dir = DEFAULT_IN_DIR
                             output_dir = DEFAULT_OUT_DIR
                             debug = False
-                            make_sf_plots = True
+                            make_sf_plots = False
                             print_sf_values = False
                             save_pngs = False
                             make_2d_eff_hists(
