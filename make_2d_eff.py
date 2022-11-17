@@ -244,12 +244,7 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     # Load input files
     logging.debug("Looking for input files in directory: %s", input_dir)
     input_files = os.listdir(input_dir)
-    logging.debug("Found", len(input_files), "files outputs in", input_dir)
-
-    # for storing actual file data
-    root_files = {
-        "data": {},
-        "mc": {}}
+    logging.debug("Found %s files in %s", len(input_files), input_dir)
 
     # get probe / match hists for each variation
     probe_hists = {"data": {}, "mc": {}}
@@ -259,15 +254,6 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     hists = {"data": {}, "mc": {}}
 
     for d_mc in ["data", "mc"]:
-        root_files[d_mc][year] = {}
-        root_files[d_mc][year][period] = {}
-        for var in c.VARIATIONS:
-            var_conf_name = d_mc+"20"+str(year)+"_"+"_".join(
-                [period, var, version, trigger_type])+".root"
-            var_conf = os.path.join(input_dir, var_conf_name)
-            if not os.path.exists(var_conf):
-                raise ValueError("File not found:", var_conf)
-            root_files[d_mc][year][period][var] = TFile(var_conf)
 
         # Creating dictionaries with (histname, hist) tuples
         # Directories where probe and match hists are located
@@ -289,33 +275,39 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
             "Will look in directory,\n"+probe_dir+
             "\nFor hist,\n"+probe_hist)
 
-        for variation in c.VARIATIONS:
-            # get associated file
-            var_file = root_files[d_mc][year][period][variation]
+        for var in c.VARIATIONS:
+            var_conf_name = d_mc+"20"+str(year)+"_"+"_".join(
+                [period, var, version, trigger_type])+".root"
+            var_conf = os.path.join(input_dir, var_conf_name)
+            if not os.path.exists(var_conf):
+                raise ValueError("File not found:", var_conf)
+
+           # get associated file
+            var_file = TFile(var_conf)
             # get probe hist, raise error if not found
             probe_branch = os.path.join(probe_dir, probe_hist)
-            probe_hists[d_mc][variation] = var_file.Get(probe_branch)
-            if not probe_hists[d_mc][variation]:
+            probe_hists[d_mc][var] = var_file.Get(probe_branch)
+            if not probe_hists[d_mc][var]:
                 raise ValueError(
                     "Couldn't find {}. Does this really exist in {}?\n".format(
                         probe_branch, var_file.GetName()))
             # get match hist, raise error if not found
             match_branch = os.path.join(match_dir, match_hist)
-            match_hists[d_mc][variation] = var_file.Get(match_branch)
-            if not match_hists[d_mc][variation]:
+            match_hists[d_mc][var] = var_file.Get(match_branch)
+            if not match_hists[d_mc][var]:
                 raise ValueError(
                     "Couldn't find {}. Does this really exist in {}?\n".format(
                         match_branch, var_file.GetName()))
-            logging.debug("Got "+d_mc+" probe & match hists for "+variation)
+            logging.debug("Got "+d_mc+" probe & match hists for "+var)
 
             # Make TEff object to do stat errors properly
-            effs[d_mc][variation] = TEfficiency(
-                match_hists[d_mc][variation], probe_hists[d_mc][variation])
+            effs[d_mc][var] = TEfficiency(
+                match_hists[d_mc][var], probe_hists[d_mc][var])
 
             # Make empty TH2 which will be filled with TEff bin values
             # (+/- errors if needed) down below
-            hists[d_mc][variation] = probe_hists[d_mc][variation].Clone()
-            hists[d_mc][variation].Reset()
+            hists[d_mc][var] = probe_hists[d_mc][var].Clone()
+            hists[d_mc][var].Reset()
 
     # Setting up data systematic, statistical variation histograms
     # for data
