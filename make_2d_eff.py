@@ -191,6 +191,14 @@ def main():
         "data": {},
         "mc": {}}
 
+    # get probe / match hists for each variation
+    probe_hists = {"data": {}, "mc": {}}
+    match_hists = {"data": {}, "mc": {}}
+    # and calculate efficiencies / make histograms
+    effs = {"data": {}, "mc": {}}
+    hists = {"data": {}, "mc": {}}
+
+
     for d_mc in ["data", "mc"]:
         root_files[d_mc][year] = {}
         root_files[d_mc][year][period] = {}
@@ -222,12 +230,6 @@ def main():
             "Will look in directory\n"+probe_dir+
             "\nFor hist\n"+probe_hist)
 
-        # get probe / match hists for each variation
-        probe_hists = {}
-        match_hists = {}
-        # and calculate efficiencies / make histograms
-        effs = {}
-        hists = {}
         for variation in c.VARIATIONS:
             # get associated file
             var_file = root_files[d_mc][year][period][variation]
