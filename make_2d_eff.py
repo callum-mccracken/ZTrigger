@@ -226,9 +226,9 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
 
     # check input/output dirs exist
     if not os.path.exists(input_dir):
-        raise ValueError("Input directory doesnot exist!", input_dir)
+        raise ValueError("Input directory does not exist!", input_dir)
     if not os.path.exists(output_dir):
-        raise ValueError("Output directory doesnot exist!", output_dir)
+        raise ValueError("Output directory does not exist!", output_dir)
 
     assert isinstance(make_sf_plots, bool)
     assert isinstance(print_sf_values, bool)
@@ -236,7 +236,6 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     assert isinstance(save_pngs, bool)
 
     montecarlo = MC_CAMPAIGNS[year]
-
 
     # Load input files
     logging.debug("Looking for input files in directory: %s", input_dir)
@@ -290,19 +289,19 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
             # get associated file
             var_file = root_files[d_mc][year][period][variation]
             # get probe hist, raise error if not found
-            probe_hists[d_mc][variation] = var_file.Get(
-                probe_dir + "/" + probe_hist)
+            probe_branch = os.path.join(probe_dir, probe_hist)
+            probe_hists[d_mc][variation] = var_file.Get(probe_branch)
             if not probe_hists[d_mc][variation]:
                 raise ValueError(
                     "Couldn't find {}. Does this really exist in {}?\n".format(
-                        probe_dir + probe_hist, var_file.GetName()))
+                        probe_branch, var_file.GetName()))
             # get match hist, raise error if not found
-            match_hists[d_mc][variation] = var_file.Get(
-                match_dir + "/" + match_hist)
+            match_branch = os.path.join(match_dir, match_hist)
+            match_hists[d_mc][variation] = var_file.Get(match_branch)
             if not match_hists[d_mc][variation]:
                 raise ValueError(
                     "Couldn't find {}. Does this really exist in {}?\n".format(
-                        match_dir + match_hist, var_file.GetName()))
+                        match_branch, var_file.GetName()))
             logging.debug("Got "+d_mc+" probe & match hists for "+variation)
 
             # Make TEff object to do stat errors properly
