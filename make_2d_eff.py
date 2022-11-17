@@ -208,6 +208,7 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
             "Invalid trigger type! Use one of", c.TRIGGER_TYPES)
 
     # check trigger
+    single = (trigger_type == "SingleMuonTriggers")
     if trigger not in triggers_in_period(single, year, period):
         raise ValueError(
             "Invalid detector region! Use one of", c.DETECTOR_REGIONS)
