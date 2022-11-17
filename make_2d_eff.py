@@ -179,10 +179,12 @@ def main():
     version = options.version
     input_dir = options.inDir
 
+    trigger_type = "SingleMuonTriggers"  # TODO loop over single and multi
+
     # Load input files
     logging.debug("Looking for input files in directory: %s", input_dir)
     input_files = os.listdir(input_dir)
-    print("Found", len(input_files), "in directory", input_dir)
+    print("Found", len(input_files), "wtph outputs in directory", input_dir)
 
     # for storing actual file data
     root_files = {
@@ -202,26 +204,26 @@ def main():
                     "Multiple variation configs found... Why?", var_confs)
             var_conf = os.path.join(options.inDir, var_confs[0])
             root_files[d_mc][year][period][var] = TFile(var_conf)
-        for region in c.DETECTOR_REGIONS:
-            # Creating dictionaries with (histname, hist) tuples
-            # Directories where probe and match hists are located
-            # (identically name in every WTPH output)
-            dir_fmt = "ZmumuTPMerged/"+quality+"MuonProbes_"+\
-                region.capitalize()+"/OC/"+trigger+"/"
-            probe_dir = dir_fmt+"Probe/"
-            match_dir = dir_fmt+"Match/"
 
-            # Hists to look for in the above directories
-            # (also identically named) in every WTPH output)
-            hist_fmt = str(
-                quality+"MuonProbes_"+region.capitalize()+"_OC_"+
-                trigger+"_{}_etaphi_fine_"+region.capitalize())
-            probe_hist = hist_fmt.format("Probe")
-            match_hist = hist_fmt.format("Match")
+        # Creating dictionaries with (histname, hist) tuples
+        # Directories where probe and match hists are located
+        # (identically name in every WTPH output)
+        dir_fmt = "ZmumuTPMerged/"+quality+"MuonProbes_"+\
+            region.capitalize()+"/OC/"+trigger+"/"
+        probe_dir = dir_fmt+"Probe/"
+        match_dir = dir_fmt+"Match/"
 
-            logging.debug(
-                "Will look in directory\n"+probe_dir+
-                "\nFor hist\n"+probe_hist)
+        # Hists to look for in the above directories
+        # (also identically named) in every WTPH output)
+        hist_fmt = str(
+            quality+"MuonProbes_"+region.capitalize()+"_OC_"+
+            trigger+"_{}_etaphi_fine_"+region.capitalize())
+        probe_hist = hist_fmt.format("Probe")
+        match_hist = hist_fmt.format("Match")
+
+        logging.debug(
+            "Will look in directory\n"+probe_dir+
+            "\nFor hist\n"+probe_hist)
 
         # get probe / match hists for each variation
         probe_hists = {}
