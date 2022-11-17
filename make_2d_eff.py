@@ -194,8 +194,9 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
         raise ValueError("Invalid year! Use one of", MC_CAMPAIGNS.keys())
 
     # check period
-    if period not in periods(int("20"+year)):
-        raise ValueError("Invalid period! Use one of", periods(int("20"+year)))
+    number_year = int("20"+year)
+    if period not in periods(number_year):
+        raise ValueError("Invalid period! Use one of", periods(number_year))
 
     # check region
     if region not in c.DETECTOR_REGIONS:
@@ -209,7 +210,7 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
 
     # check trigger
     single = (trigger_type == "SingleMuonTriggers")
-    if trigger not in triggers_in_period(single, year, period):
+    if trigger not in triggers_in_period(single, number_year, period):
         raise ValueError(
             "Invalid detector region! Use one of", c.DETECTOR_REGIONS)
 
