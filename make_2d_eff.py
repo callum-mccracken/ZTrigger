@@ -563,8 +563,11 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     # get them by dividing total matches/probes for data and mc
     if print_sf_values:
         for k in hists["data"]:
-            sf_values[k] = (n_data_matches[k] / n_data_probes[k]) / (
-                n_mc_matches[k] / n_mc_probes[k])
+            if n_data_probes[k] == 0 or n_mc_probes[k] == 0:
+                sf_values[k] = 0
+            else:
+                sf_values[k] = (n_data_matches[k] / n_data_probes[k]) / (
+                    n_mc_matches[k] / n_mc_probes[k])
 
     # Create/update systematics Efficiencies TFile
     # make efficiency ROOT files
