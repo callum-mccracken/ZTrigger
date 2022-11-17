@@ -412,8 +412,9 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
 
         # Error propagation:
         # err_sf = sf*(err_data_eff/data_eff + err_mc_eff/mc_eff)
-        scale_factor = data_eff / mc_eff
-        sfstaterr = (scale_factor * (
+        # TODO: is this the right way to deal with divide-by-zero errors?
+        scale_factor = 0 if mc_eff == 0 else data_eff / mc_eff
+        sfstaterr = 0 if mc_eff == 0 or data_eff == 0 else (scale_factor * (
             data_stat_err / data_eff + mc_stat_err / mc_eff))
 
     # Looping through each bin of each histogram
