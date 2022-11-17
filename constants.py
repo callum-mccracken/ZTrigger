@@ -85,3 +85,14 @@ WTPH_RUN_CONF_DIR = os.path.join(
 WTPH_INPUT_CONF_FMT = {
     "data": "data_{year}_{period}.conf",
     "mc": "{year}_{period}_Zmumu.conf"}
+
+
+def get_detector_regions():
+    """Get detector regions from detector region template file."""
+    with open(os.path.join(DETECTOR_REGION_TEMPLATE), "r") as det_file:
+        lines = det_file.readlines()
+        name_lines = [l for l in lines if "RegionName" in l]
+        names = [nl.split()[1] for nl in name_lines]
+    return names
+
+DETECTOR_REGIONS = get_detector_regions()
