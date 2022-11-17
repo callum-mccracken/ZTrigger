@@ -413,7 +413,11 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
         # Error propagation:
         # err_sf = sf*(err_data_eff/data_eff + err_mc_eff/mc_eff)
         # TODO: is this the right way to deal with divide-by-zero errors?
-        scale_factor = 0 if mc_eff == 0 else data_eff / mc_eff
+        if mc_eff == 0:
+            logging.warning("MC efficiency is zero -- setting SF = 0!")
+            scale_factor = 0
+        else:
+            scale_factor = data_eff / mc_eff
         sfstaterr = 0 if mc_eff == 0 or data_eff == 0 else (scale_factor * (
             data_stat_err / data_eff + mc_stat_err / mc_eff))
 
@@ -563,6 +567,7 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     # get them by dividing total matches/probes for data and mc
     if print_sf_values:
         for k in hists["data"]:
+            # TODO: is this the right way to deal with /0 errors?
             if n_data_probes[k] == 0 or n_mc_probes[k] == 0:
                 sf_values[k] = 0
             else:
@@ -726,18 +731,20 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
         for k, sf_val in sorted(sf_values.items()):
             if (k != "nominal" and k != "TotSyst"):
                 placeholder += (sf_val - sf_values["nominal"])**2
+                sf_rounded = round(sf_val, 5)
+                pct_diff = -1 if sf_values["nominal"] == 0 else round((
+                    sf_val - sf_values["nominal"]) / sf_values["nominal"],
+                    5) * 100
                 print("{:<15} {:<15} {:<15}".format(
-                    k, round(sf_val, 5), round(
-                        (sf_val - sf_values["nominal"]) / sf_values["nominal"],
-                        5) * 100))
+                    k, sf_rounded, pct_diff))
         sf_values["TotSyst"] = sf_values["nominal"] + math.sqrt(placeholder)
+        tot_sf_rounded = round(sf_values["TotSyst"], 5)
+        tot_pct_diff = -1 if sf_values["nominal"] == 0 else round(
+            (sf_values["TotSyst"]-sf_values["nominal"]
+            )/sf_values["nominal"], 5) * 100
         print(
             "{:<15} {:<15} {:<15}".format(
-                "Total",
-                round(sf_values["TotSyst"], 5),
-                round(
-                    (sf_values["TotSyst"]-sf_values["nominal"]
-                    )/sf_values["nominal"], 5) * 100))
+                "Total", tot_sf_rounded, tot_pct_diff))
 
 
 def run_over_everything():
