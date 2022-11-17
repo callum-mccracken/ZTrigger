@@ -190,6 +190,10 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
                       version, input_dir, output_dir, make_sf_plots,
                       print_sf_values, debug, save_pngs):
     """Make 2D Efficiency histograms for all the given parameters."""
+    print(year, period, quality, region, trigger_type)
+    # Suppresses basic info prints to terminal (used to shut up TEff constructor)
+    gROOT.ProcessLine("gErrorIgnoreLevel = 1001;")
+
     # check year
     if year not in MC_CAMPAIGNS.keys():
         raise ValueError("Invalid year! Use one of", MC_CAMPAIGNS.keys())
@@ -240,7 +244,7 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     # Load input files
     logging.debug("Looking for input files in directory: %s", input_dir)
     input_files = os.listdir(input_dir)
-    print("Found", len(input_files), "wtph outputs in directory", input_dir)
+    logging.debug("Found", len(input_files), "files outputs in", input_dir)
 
     # for storing actual file data
     root_files = {
