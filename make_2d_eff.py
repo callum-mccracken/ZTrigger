@@ -59,6 +59,7 @@ import optparse
 import sys
 import os
 import logging
+import itertools
 from ROOT import *
 import constants as c
 from run_numbers import periods
@@ -159,7 +160,7 @@ def get_options():
     if options.debug:
         logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
     else:
-        logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
+        logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
     if options.year is None:
         print("using default year: 2018 (18)")
@@ -219,6 +220,10 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
         raise ValueError(
             "Invalid quality working point! Use one of", c.WORKING_POINTS)
 
+    # show warning if you're running over another version
+    if version != c.NTUPLE_VERSION:
+        logging.warning("Version is not the same as in constants module!")
+
     # check input/output dirs exist
     if not os.path.exists(input_dir):
         raise ValueError("Input directory doesnot exist!", input_dir)
@@ -249,7 +254,6 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     # and calculate efficiencies / make histograms
     effs = {"data": {}, "mc": {}}
     hists = {"data": {}, "mc": {}}
-
 
     for d_mc in ["data", "mc"]:
         root_files[d_mc][year] = {}
@@ -563,58 +567,57 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
                 n_mc_matches[k] / n_mc_probes[k])
 
     # Create/update systematics Efficiencies TFile
-    # Do not make efficiency ROOT files if print_sf_values == True
-    if not make_sf_plots and not print_sf_values:
-        if debug:
-            effs_filepath = os.path.join(output_dir, "debug.root")
-            # test output file
-        else:
-            # Change ntuple version to match your inputs!
-            # outfile named in format for SF tool
-            effs_filepath = os.path.join(
-                output_dir, 'muontrigger_sf_20%s_mc%s_%s.root' %
-                (year, montecarlo, version))
-        logging.info("Will output data, MC efficiencies to %s", effs_filepath)
-        effs_file = TFile(effs_filepath, 'update')
-        # Create directory
-        # (trigger may or may not contain _RM, replace does nothing if not)
-        dir_name = quality + "/Period" + period + "/" +\
-            trigger.replace("_RM", "") + "/"
+    # make efficiency ROOT files
+    if debug:
+        effs_filepath = os.path.join(output_dir, "debug.root")
+        # test output file
+    else:
+        # Change ntuple version to match your inputs!
+        # outfile named in format for SF tool
+        effs_filepath = os.path.join(
+            output_dir, 'muontrigger_sf_20%s_mc%s_%s.root' %
+            (year, montecarlo, version))
+    logging.info("Will output data, MC efficiencies to %s", effs_filepath)
+    effs_file = TFile(effs_filepath, 'update')
+    # Create directory
+    # (trigger may or may not contain _RM, replace does nothing if not)
+    dir_name = quality + "/Period" + period + "/" +\
+        trigger.replace("_RM", "") + "/"
 
-        logging.debug(" - Directory: %s", dir_name)
-        effs_file.mkdir(dir_name)
-        effs_file.cd(dir_name)
-        # Put corresponding plots into working point directory
-        #Data:
-        hists["data"]["nominal"].Write("eff_etaphi_fine_%s_data_nominal" % (
-            region.lower()), TObject.kOverwrite)
-        data_syst_up.Write("eff_etaphi_fine_%s_data_syst_up" % (
-            region.lower()), TObject.kOverwrite)
-        data_syst_dw.Write("eff_etaphi_fine_%s_data_syst_down" % (
-            region.lower()), TObject.kOverwrite)
-        data_stat_up.Write("eff_etaphi_fine_%s_data_stat_up" % (
-            region.lower()), TObject.kOverwrite)
-        data_stat_dw.Write("eff_etaphi_fine_%s_data_stat_down" % (
-            region.lower()), TObject.kOverwrite)
-        for k in sorted(hists["data"].keys()):
-            if k != "dnominal":
-                hists["data"][k].Write("eff_etaphi_fine_%s_data_%s" % (
-                    region.lower(), k), TObject.kOverwrite)
-        #MC:
-        hists["mc"]["nominal"].Write("eff_etaphi_fine_%s_mc_nominal" % (
-            region.lower()), TObject.kOverwrite)
-        mc_syst_up.Write("eff_etaphi_fine_%s_mc_syst_up" % (
-            region.lower()), TObject.kOverwrite)
-        mc_syst_dw.Write("eff_etaphi_fine_%s_mc_syst_down" % (
-            region.lower()), TObject.kOverwrite)
-        mc_stat_up.Write("eff_etaphi_fine_%s_mc_stat_up" % (
-            region.lower()), TObject.kOverwrite)
-        mc_stat_dw.Write("eff_etaphi_fine_%s_mc_stat_down" % (
-            region.lower()), TObject.kOverwrite)
-        for k in sorted(hists["mc"].keys()):
-            if k != "nominal":
-                hists["mc"][k].Write("eff_etaphi_fine_%s_mc_%s" % (
-                    region.lower(), k), TObject.kOverwrite)
+    logging.debug(" - Directory: %s", dir_name)
+    effs_file.mkdir(dir_name)
+    effs_file.cd(dir_name)
+    # Put corresponding plots into working point directory
+    #Data:
+    hists["data"]["nominal"].Write("eff_etaphi_fine_%s_data_nominal" % (
+        region.lower()), TObject.kOverwrite)
+    data_syst_up.Write("eff_etaphi_fine_%s_data_syst_up" % (
+        region.lower()), TObject.kOverwrite)
+    data_syst_dw.Write("eff_etaphi_fine_%s_data_syst_down" % (
+        region.lower()), TObject.kOverwrite)
+    data_stat_up.Write("eff_etaphi_fine_%s_data_stat_up" % (
+        region.lower()), TObject.kOverwrite)
+    data_stat_dw.Write("eff_etaphi_fine_%s_data_stat_down" % (
+        region.lower()), TObject.kOverwrite)
+    for k in sorted(hists["data"].keys()):
+        if k != "dnominal":
+            hists["data"][k].Write("eff_etaphi_fine_%s_data_%s" % (
+                region.lower(), k), TObject.kOverwrite)
+    #MC:
+    hists["mc"]["nominal"].Write("eff_etaphi_fine_%s_mc_nominal" % (
+        region.lower()), TObject.kOverwrite)
+    mc_syst_up.Write("eff_etaphi_fine_%s_mc_syst_up" % (
+        region.lower()), TObject.kOverwrite)
+    mc_syst_dw.Write("eff_etaphi_fine_%s_mc_syst_down" % (
+        region.lower()), TObject.kOverwrite)
+    mc_stat_up.Write("eff_etaphi_fine_%s_mc_stat_up" % (
+        region.lower()), TObject.kOverwrite)
+    mc_stat_dw.Write("eff_etaphi_fine_%s_mc_stat_down" % (
+        region.lower()), TObject.kOverwrite)
+    for k in sorted(hists["mc"].keys()):
+        if k != "nominal":
+            hists["mc"][k].Write("eff_etaphi_fine_%s_mc_%s" % (
+                region.lower(), k), TObject.kOverwrite)
 
     # Save all data, mc (and SF, if SF plots made) hists as pngs
     if save_pngs:
@@ -734,29 +737,60 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
                     )/sf_values["nominal"], 5) * 100))
 
 
+def run_over_everything():
+    """Run make_2d_eff_hists"""
+    for trigger_type in c.TRIGGER_TYPES:
+        single = (trigger_type == "SingleMuonTriggers")
+        for number_year in c.YEARS:
+            year = str(number_year)[2:]
+            for period in periods(number_year):
+                for region in c.DETECTOR_REGIONS:
+                    for trigger in triggers_in_period(single,
+                                                      number_year,
+                                                      period):
+                        for quality in c.WORKING_POINTS:
+                            version = c.NTUPLE_VERSION
+                            input_dir = DEFAULT_IN_DIR
+                            output_dir = DEFAULT_OUT_DIR
+                            debug = False
+                            make_sf_plots = True
+                            print_sf_values = True
+                            save_pngs = True
+                            make_2d_eff_hists(
+                                year, period, region, trigger_type, trigger,
+                                quality, version, input_dir, output_dir,
+                                make_sf_plots, print_sf_values, debug,
+                                save_pngs)
+
 
 def main():
     """Make 2D Efficiency Histograms."""
-    options = get_options()
 
-    year = options.year
-    period = options.period
-    region = options.region
-    trigger_type = options.triggerType
-    trigger = options.trigger
-    quality = options.quality
-    version = options.version
-    input_dir = options.inDir
-    output_dir = options.outDir
-    make_sf_plots = options.makeSFPlots
-    print_sf_values = options.printSFValues
-    debug = options.debug
-    save_pngs = options.savePNGs
+    run_all = True
 
-    make_2d_eff_hists(
-        year, period, region, trigger_type, trigger, quality, version,
-        input_dir, output_dir, make_sf_plots, print_sf_values, debug,
-        save_pngs)
+    if run_all:
+        run_over_everything()
+    else:
+        options = get_options()
+
+        year = options.year
+        period = options.period
+        region = options.region
+        trigger_type = options.triggerType
+        trigger = options.trigger
+        quality = options.quality
+        version = options.version
+        input_dir = options.inDir
+        output_dir = options.outDir
+        make_sf_plots = options.makeSFPlots
+        print_sf_values = options.printSFValues
+        debug = options.debug
+        save_pngs = options.savePNGs
+
+        make_2d_eff_hists(
+            year, period, region, trigger_type, trigger, quality, version,
+            input_dir, output_dir, make_sf_plots, print_sf_values, debug,
+            save_pngs)
 
 
 if __name__ == "__main__":
