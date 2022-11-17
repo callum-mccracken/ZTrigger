@@ -475,7 +475,7 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
         # Inclusive SF stat uncertainty using 1-bin copies of data/mc hists
         #Data inclusive eff
         data_match_nominal = match_hists["data"]["nominal"]
-        print(data_match_nominal.GetEntries())
+        print(data_nominal.Get(probe_dir + "/" + probe_hist).GetEntries())
 
         data_match_1_bin = data_match_nominal.Clone()
         data_match_1_bin.Rebin2D(xbins, ybins)
