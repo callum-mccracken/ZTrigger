@@ -22,8 +22,9 @@ def get_ors(trigger_list):
 
     I.e. take all unique pairings where the lower-pt muon goes first.
     """
-    def get_pt(trigger_name: str):
+    def get_pt(trigger_name):
         """Given a single-muon trigger name, return the muon pt."""
+        trigger_name = str(trigger_name)
         return int(trigger_name.split("_")[1].replace("mu", ""))
 
     # sort triggers by pt
@@ -38,7 +39,7 @@ def get_ors(trigger_list):
     return or_triggers
 
 
-triggers = {
+TRIGGERS = {
     # do I need to worry about only using C2-C4 and D3-D6
     2015: {
         "ANY": {
@@ -285,8 +286,10 @@ triggers = {
 
 
 # add OR combinations for single-muon triggers
-for _, year_dict in triggers.items():
-    for _, period_dict in year_dict.items():
+for yr in TRIGGERS:
+    year_dict = TRIGGERS[yr]
+    for prd in year_dict:
+        period_dict = year_dict[prd]
         single_triggers = period_dict["SINGLE"]
         single_triggers += get_ors(single_triggers)
         period_dict["SINGLE"] = single_triggers
@@ -309,9 +312,9 @@ New_MatchSelection
 End_MatchSelection
 """
 
-def triggers_in_period(single: bool, year: int, period: str):
+def triggers_in_period(single, year, period):
     """Return a list of triggers in a given period"""
-    triggers_in_year = triggers[year]
+    triggers_in_year = TRIGGERS[year]
     if period in triggers_in_year.keys():
         trigs_in_period = triggers_in_year[period]
     elif "ANY" in triggers_in_year.keys():
@@ -331,5 +334,6 @@ def get_matches_text(single, year, period):
             matches_text += OR_TRIGGER_TEMPLATE.format(
                 trigger_name=trigger, trigger_1=trigger_1, trigger_2=trigger_2)
         else:
-            matches_text += SINGLE_TRIGGER_TEMPLATE.format(trigger_name=trigger)
+            matches_text += SINGLE_TRIGGER_TEMPLATE.format(
+                trigger_name=trigger)
     return matches_text

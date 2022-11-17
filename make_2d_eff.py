@@ -61,6 +61,8 @@ import os
 import logging
 from ROOT import *
 import constants as c
+from run_numbers import periods
+from triggers import triggers_in_period
 
 # TODO Need to be careful about period K 2017 nvtx systematic:
 # TODO cut >/< 19 vertices for 2017 but >/< 25 for period K
@@ -142,6 +144,9 @@ def get_options():
     # trigger selection: HLT_{mu10, mu14, etc.}
     parser.add_option('-t', '--trigger', type='string', default=None,
                       dest='trigger')
+    # trigger type selection, SingleMuonTriggers or MultiLegTriggers
+    parser.add_option('-tt', '--triggerType', type='string', default=None,
+                      dest='triggerType')
     # muon quality working point: Medium, Loose, Tight, HighPt
     parser.add_option('-q', '--quality', type='string', default=None,
                       dest='quality')
@@ -165,6 +170,9 @@ def get_options():
     if options.region is None:
         print("using default region: Barrel")
         options.region = "Barrel"
+    if options.triggerType is None:
+        print("using defualt triggerType: SingleMuonTriggers")
+        options.triggerType = "SingleMuonTriggers"
     if options.trigger is None:
         print("using defualt trigger: HLT_mu26_ivarmedium")
         options.trigger = "HLT_mu26_ivarmedium"
@@ -177,27 +185,51 @@ def get_options():
     return options
 
 
-def main():
-    """Make 2D Efficiency Histograms."""
-    options = get_options()
-
-    year = options.year
+def make_2d_eff_hists(year, period, region, trigger, quality, version,
+                      input_dir, output_dir, make_sf_plots, print_sf_values,
+                      debug, save_pngs):
+    """Make 2D Efficiency histograms for all the given parameters."""
+    # check year
     if year not in MC_CAMPAIGNS.keys():
         raise ValueError("Invalid year! Use one of", MC_CAMPAIGNS.keys())
-    montecarlo = MC_CAMPAIGNS[year]
-    period = options.period
-    region = options.region
-    trigger = options.trigger
-    quality = options.quality
-    version = options.version
-    input_dir = options.inDir
-    output_dir = options.outDir
-    make_sf_plots = options.makeSFPlots
-    print_sf_values = options.printSFValues
-    debug = options.debug
-    save_pngs = options.savePNGs
 
-    trigger_type = "SingleMuonTriggers"  # TODO loop over single and multi
+    # check period
+    if period not in periods(int("20"+year)):
+        raise ValueError("Invalid period! Use one of", periods(int("20"+year)))
+
+    # check region
+    if region not in c.DETECTOR_REGIONS:
+        raise ValueError(
+            "Invalid detector region! Use one of", c.DETECTOR_REGIONS)
+
+    # check trigger_type
+    if trigger_type not in c.TRIGGER_TYPES:
+        raise ValueError(
+            "Invalid trigger type! Use one of", c.TRIGGER_TYPES)
+
+    # check trigger
+    if trigger not in triggers_in_period(single, year, period):
+        raise ValueError(
+            "Invalid detector region! Use one of", c.DETECTOR_REGIONS)
+
+    # check quality working point
+    if quality not in c.WORKING_POINTS:
+        raise ValueError(
+            "Invalid quality working point! Use one of", c.WORKING_POINTS)
+
+    # check input/output dirs exist
+    if not os.path.exists(input_dir):
+        raise ValueError("Input directory doesnot exist!", input_dir)
+    if not os.path.exists(output_dir):
+        raise ValueError("Output directory doesnot exist!", output_dir)
+
+    assert isinstance(make_sf_plots, bool)
+    assert isinstance(print_sf_values, bool)
+    assert isinstance(debug, bool)
+    assert isinstance(save_pngs, bool)
+
+    montecarlo = MC_CAMPAIGNS[year]
+
 
     # Load input files
     logging.debug("Looking for input files in directory: %s", input_dir)
@@ -703,6 +735,32 @@ def main():
                 round(
                     (sf_values["TotSyst"]-sf_values["nominal"]
                     )/sf_values["nominal"], 5) * 100))
+
+
+
+def main():
+    """Make 2D Efficiency Histograms."""
+    options = get_options()
+
+    year = options.year
+    period = options.period
+    region = options.region
+    trigger_type = options.triggerType
+    trigger = options.trigger
+    quality = options.quality
+    version = options.version
+    input_dir = options.inDir
+    output_dir = options.outDir
+    make_sf_plots = options.makeSFPlots
+    print_sf_values = options.printSFValues
+    debug = options.debug
+    save_pngs = options.savePNGs
+
+    make_2d_eff_hists(
+        year, period, region, trigger_type, trigger, quality, version,
+        input_dir, output_dir, make_sf_plots, print_sf_values, debug,
+        save_pngs)
+
 
 if __name__ == "__main__":
     main()

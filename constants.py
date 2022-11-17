@@ -23,7 +23,6 @@ VARIATIONS = [
     "isoPflowLoose_VarRad", "isoPflowTight_VarRad",
     "isoLoose_VarRad", "isoTight_VarRad"]
 WORKING_POINTS = ["Medium", "Loose", "Tight", "HighPt"]
-DETECTOR_REGIONS = ["All", "noCrack", "Barrel", "Endcap"]
 
 # where we are now, relative to MuonTPPostProcessing
 ZTRIGGER_DIR = "MuonTPPostProcessing/RunConf/ZTrigger/"
@@ -31,6 +30,7 @@ ZTRIGGER_DIR = "MuonTPPostProcessing/RunConf/ZTrigger/"
 # directory for storing single muon stuff, relative to TOP_LEVEL_DIR
 SINGLE_MUON_DIR = "SingleMuonTriggers"
 MULTI_LEG_DIR = "MultiLegTriggers"
+TRIGGER_TYPES = ["SingleMuonTriggers", "MultiLegTriggers"]
 
 # template files -- SM = Single Muon, ML = Multi Leg
 DETECTOR_REGION_TEMPLATE = "templates/DetectorRegionsForZmumuReco.conf"

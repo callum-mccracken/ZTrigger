@@ -183,5 +183,5 @@ RUN_NUMBERS = {
 }
 
 def periods(year):
-    """Get the list of periods in a year."""
+    """Get the list of periods in a year (integer, 4-digit)."""
     return RUN_NUMBERS[year].keys()
