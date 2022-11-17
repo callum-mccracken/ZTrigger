@@ -157,8 +157,8 @@ def get_options():
         logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 
     if options.year is None:
-        print("using default year: 2018")
-        options.year = "2018"
+        print("using default year: 2018 (18)")
+        options.year = "18"
     if options.period is None:
         print("using default period: B")
         options.period = "B"
@@ -183,7 +183,7 @@ def main():
 
     year = options.year
     if year not in MC_CAMPAIGNS.keys():
-        raise ValueError("Invalid year! Use one of")
+        raise ValueError("Invalid year! Use one of", MC_CAMPAIGNS.keys())
     montecarlo = MC_CAMPAIGNS[year]
     period = options.period
     region = options.region
