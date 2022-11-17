@@ -849,7 +849,7 @@ def run_over_everything():
 def main():
     """Make 2D Efficiency Histograms."""
 
-    run_all = True
+    run_all = False
 
     if run_all:
         run_over_everything()
