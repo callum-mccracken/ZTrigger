@@ -487,9 +487,9 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
                 hists["mc"]["isoEnv"].SetBinContent(i, j, mcsyst_tight)
                 #SF inclusive isoEnv value
                 if print_sf_values:
-                    n_data_matches["isoEnv"] += match_hists[
+                    n_data_matches["isoEnv"] += match_hists["data"][
                         "isoTight_VarRad"].GetBinContent(i, j)
-                    n_data_probes["isoEnv"] += probe_hists[
+                    n_data_probes["isoEnv"] += probe_hists["data"][
                         "isoTight_VarRad"].GetBinContent(i, j)
                     n_mc_matches["isoEnv"] += match_hists["mc"][
                         "isoTight_VarRad"].GetBinContent(i, j)
@@ -501,9 +501,9 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
                 hists["mc"]["isoEnv"].SetBinContent(i, j, mcsyst_tight_pflow)
                 # SF inclusive isoEnv value
                 if print_sf_values:
-                    n_data_matches["isoEnv"] += match_hists[
+                    n_data_matches["isoEnv"] += match_hists["data"][
                         "isoPflowTight_VarRad"].GetBinContent(i, j)
-                    n_data_probes["isoEnv"] += probe_hists[
+                    n_data_probes["isoEnv"] += probe_hists["data"][
                         "isoPflowTight_VarRad"].GetBinContent(i, j)
                     n_mc_matches["isoEnv"] += match_hists["mc"][
                         "isoPflowTight_VarRad"].GetBinContent(i, j)
