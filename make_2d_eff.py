@@ -146,7 +146,7 @@ def get_options():
         print("using default year: 2018")
         options.year = "2018"
     if options.period is None:
-        print("using default period: 2018")
+        print("using default period: B")
         options.period = "B"
     if options.trigger is None:
         print("using defualt trigger: HLT_mu26_ivarmedium")
@@ -184,7 +184,9 @@ def main():
             if input_file.startswith(d_mc+str(year)+"_"+period)]
         for var in c.VARIATIONS:
             var_confs = [df for df in period_files if var in df]
-            assert len(var_confs) == 1
+            if len(var_confs) != 1:
+                raise ValueError(
+                    "Multiple variation configs found... Why?", var_confs)
             var_conf = os.path.join(options.inDir, var_confs[0])
             root_files[d_mc][year][period][var] = TFile(var_conf)
         for region in c.DETECTOR_REGIONS:
