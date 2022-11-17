@@ -566,21 +566,16 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     # Do not make efficiency ROOT files if print_sf_values == True
     if not make_sf_plots and not print_sf_values:
         if debug:
-            logging.debug(
-                "Will output data, MC efficiencies to file %s/debug.root",
-                output_dir)
+            effs_filepath = os.path.join(output_dir, "debug.root")
             # test output file
-            effs_file = TFile(output_dir + '/debug.root', 'update')
         else:
             # Change ntuple version to match your inputs!
-            logging.info(
-                "Will output data, MC efficiencies to file " +
-                "%s/muontrigger_sf_20%s_mc%s_%s.root",
-                (output_dir, year, montecarlo, version))
-            effs_file = TFile(
-                output_dir + '/muontrigger_sf_20%s_mc%s_%s.root' %
-                (year, montecarlo, version),
-                'update')  # outfile named in format for SF tool
+            # outfile named in format for SF tool
+            effs_filepath = os.path.join(
+                output_dir, 'muontrigger_sf_20%s_mc%s_%s.root' %
+                (year, montecarlo, version))
+        logging.info("Will output data, MC efficiencies to %s", effs_filepath)
+        effs_file = TFile(effs_filepath, 'update')
         # Create directory
         # (trigger may or may not contain _RM, replace does nothing if not)
         dir_name = quality + "/Period" + period + "/" +\
