@@ -276,6 +276,7 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
             "\nFor hist,\n"+probe_hist)
 
         for var in c.VARIATIONS:
+            print(d_mc, var)
             var_conf_name = d_mc+"20"+str(year)+"_"+"_".join(
                 [period, var, version, trigger_type])+".root"
             var_conf = os.path.join(input_dir, var_conf_name)
