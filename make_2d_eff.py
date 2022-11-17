@@ -281,47 +281,67 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     #     "isoPflowLoose_VarRad", "isoPflowTight_VarRad",
     #     "isoLoose_VarRad", "isoTight_VarRad"]
 
-    data_nominal = TFile(var_conf_fmt.format("data", "nominal"))
-    data_dphill = TFile(var_conf_fmt.format("data", "dphill"))
-    data_mll = TFile(var_conf_fmt.format("data", "mll"))
-    data_muneg = TFile(var_conf_fmt.format("data", "muneg"))
-    data_mupos = TFile(var_conf_fmt.format("data", "mupos"))
-    data_no_ip = TFile(var_conf_fmt.format("data", "noIP"))
-    data_nvtx_dw = TFile(var_conf_fmt.format("data", "nvtx_dw"))
-    data_nvtx_up = TFile(var_conf_fmt.format("data", "nvtx_up"))
-    data_ptdw = TFile(var_conf_fmt.format("data", "ptdw"))
-    data_ptup = TFile(var_conf_fmt.format("data", "ptup"))
-    data_iso_loose_pf = TFile(
-        var_conf_fmt.format("data", "isoPflowLoose_VarRad"))
-    data_iso_tight_pf = TFile(
-        var_conf_fmt.format("data", "isoPflowTight_VarRad"))
-    data_iso_loose = TFile(
-        var_conf_fmt.format("data", "isoLoose_VarRad"))
-    data_iso_tight = TFile(
-        var_conf_fmt.format("data", "isoTight_VarRad"))
+    data_nominal = TFile(var_conf_fmt.format(
+        data_mc="data", variation="nominal"))
+    data_dphill = TFile(var_conf_fmt.format(
+        data_mc="data", variation="dphill"))
+    data_mll = TFile(var_conf_fmt.format(
+        data_mc="data", variation="mll"))
+    data_muneg = TFile(var_conf_fmt.format(
+        data_mc="data", variation="muneg"))
+    data_mupos = TFile(var_conf_fmt.format(
+        data_mc="data", variation="mupos"))
+    data_no_ip = TFile(var_conf_fmt.format(
+        data_mc="data", variation="noIP"))
+    data_nvtx_dw = TFile(var_conf_fmt.format(
+        data_mc="data", variation="nvtx_dw"))
+    data_nvtx_up = TFile(var_conf_fmt.format(
+        data_mc="data", variation="nvtx_up"))
+    data_ptdw = TFile(var_conf_fmt.format(
+        data_mc="data", variation="ptdw"))
+    data_ptup = TFile(var_conf_fmt.format(
+        data_mc="data", variation="ptup"))
+    data_iso_loose_pf = TFile(var_conf_fmt.format(
+        data_mc="data", variation="isoPflowLoose_VarRad"))
+    data_iso_tight_pf = TFile(var_conf_fmt.format(
+        data_mc="data", variation="isoPflowTight_VarRad"))
+    data_iso_loose = TFile(var_conf_fmt.format(
+        data_mc="data", variation="isoLoose_VarRad"))
+    data_iso_tight = TFile(var_conf_fmt.format(
+        data_mc="data", variation="isoTight_VarRad"))
     data_files = [
         data_nominal, data_dphill, data_mll, data_muneg, data_mupos,
         data_no_ip, data_nvtx_dw, data_nvtx_up, data_ptdw, data_ptup,
         data_iso_loose_pf, data_iso_tight_pf, data_iso_loose, data_iso_tight]
 
-    mc_nominal = TFile(var_conf_fmt.format("mc", "nominal"))
-    mc_dphill = TFile(var_conf_fmt.format("mc", "dphill"))
-    mc_mll = TFile(var_conf_fmt.format("mc", "mll"))
-    mc_muneg = TFile(var_conf_fmt.format("mc", "muneg"))
-    mc_mupos = TFile(var_conf_fmt.format("mc", "mupos"))
-    mc_no_ip = TFile(var_conf_fmt.format("mc", "noIP"))
-    mc_nvtx_dw = TFile(var_conf_fmt.format("mc", "nvtx_dw"))
-    mc_nvtx_up = TFile(var_conf_fmt.format("mc", "nvtx_up"))
-    mc_ptdw = TFile(var_conf_fmt.format("mc", "ptdw"))
-    mc_ptup = TFile(var_conf_fmt.format("mc", "ptup"))
-    mc_iso_loose_pf = TFile(
-        var_conf_fmt.format("mc", "isoPflowLoose_VarRad"))
-    mc_iso_tight_pf = TFile(
-        var_conf_fmt.format("mc", "isoPflowTight_VarRad"))
-    mc_iso_loose = TFile(
-        var_conf_fmt.format("mc", "isoLoose_VarRad"))
-    mc_iso_tight = TFile(
-        var_conf_fmt.format("mc", "isoTight_VarRad"))
+    mc_nominal = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="nominal"))
+    mc_dphill = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="dphill"))
+    mc_mll = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="mll"))
+    mc_muneg = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="muneg"))
+    mc_mupos = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="mupos"))
+    mc_no_ip = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="noIP"))
+    mc_nvtx_dw = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="nvtx_dw"))
+    mc_nvtx_up = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="nvtx_up"))
+    mc_ptdw = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="ptdw"))
+    mc_ptup = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="ptup"))
+    mc_iso_loose_pf = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="isoPflowLoose_VarRad"))
+    mc_iso_tight_pf = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="isoPflowTight_VarRad"))
+    mc_iso_loose = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="isoLoose_VarRad"))
+    mc_iso_tight = TFile(var_conf_fmt.format(
+        data_mc="mc", variation="isoTight_VarRad"))
     mc_files = [
         mc_nominal, mc_dphill, mc_mll, mc_muneg, mc_mupos,
         mc_no_ip, mc_nvtx_dw, mc_nvtx_up, mc_ptdw, mc_ptup,
