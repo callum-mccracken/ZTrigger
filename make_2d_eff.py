@@ -246,71 +246,140 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     input_files = os.listdir(input_dir)
     logging.debug("Found %s files in %s", len(input_files), input_dir)
 
-    # get probe / match hists for each variation
+    dir_fmt = "ZmumuTPMerged/"+quality+"MuonProbes_"+\
+        region.capitalize()+"/OC/"+trigger+"/"
+    probe_dir = dir_fmt+"Probe/"
+    match_dir = dir_fmt+"Match/"
+
+    # Hists to look for in the above directories
+    # (also identically named) in every WTPH output)
+    hist_fmt = str(
+        quality+"MuonProbes_"+region.capitalize()+"_OC_"+
+        trigger+"_{}_etaphi_fine_"+region.capitalize())
+    probe_hist = hist_fmt.format("Probe")
+    match_hist = hist_fmt.format("Match")
+
+    logging.debug(
+        "Will look in directory,\n"+probe_dir+
+        "\nFor hist,\n"+probe_hist)
+
+    var_conf_name = "{data_mc}20"+str(year)+"_"+"_".join(
+        [period, "{variation}", version, trigger_type])+".root"
+    var_conf_fmt = os.path.join(input_dir, var_conf_name)
+    for d_mc in ["data", "mc"]:
+        for var in c.VARIATIONS:
+            var_conf = var_conf_fmt.format(data_mc=d_mc, variation=var)
+            if not os.path.exists(var_conf):
+                raise ValueError("File not found:", var_conf)
+
+    # unfortunately it IS necessary to keep these as separately named variables
+    # or else ROOT has some problem with namespace garbage
+    # sorry about that, future code friend
+    # VARIATIONS = [
+    #     "nominal", "dphill", "mll",
+    #     "muneg", "mupos", "noIP", "nvtx_dw", "nvtx_up", "ptdw", "ptup",
+    #     "isoPflowLoose_VarRad", "isoPflowTight_VarRad",
+    #     "isoLoose_VarRad", "isoTight_VarRad"]
+
+    data_nominal = TFile(var_conf_fmt.format("data", "nominal"))
+    data_dphill = TFile(var_conf_fmt.format("data", "dphill"))
+    data_mll = TFile(var_conf_fmt.format("data", "mll"))
+    data_muneg = TFile(var_conf_fmt.format("data", "muneg"))
+    data_mupos = TFile(var_conf_fmt.format("data", "mupos"))
+    data_no_ip = TFile(var_conf_fmt.format("data", "noIP"))
+    data_nvtx_dw = TFile(var_conf_fmt.format("data", "nvtx_dw"))
+    data_nvtx_up = TFile(var_conf_fmt.format("data", "nvtx_up"))
+    data_ptdw = TFile(var_conf_fmt.format("data", "ptdw"))
+    data_ptup = TFile(var_conf_fmt.format("data", "ptup"))
+    data_iso_loose_pf = TFile(
+        var_conf_fmt.format("data", "isoPflowLoose_VarRad"))
+    data_iso_tight_pf = TFile(
+        var_conf_fmt.format("data", "isoPflowTight_VarRad"))
+    data_iso_loose = TFile(
+        var_conf_fmt.format("data", "isoLoose_VarRad"))
+    data_iso_tight = TFile(
+        var_conf_fmt.format("data", "isoTight_VarRad"))
+    data_files = [
+        data_nominal, data_dphill, data_mll, data_muneg, data_mupos,
+        data_no_ip, data_nvtx_dw, data_nvtx_up, data_ptdw, data_ptup,
+        data_iso_loose_pf, data_iso_tight_pf, data_iso_loose, data_iso_tight]
+
+    mc_nominal = TFile(var_conf_fmt.format("mc", "nominal"))
+    mc_dphill = TFile(var_conf_fmt.format("mc", "dphill"))
+    mc_mll = TFile(var_conf_fmt.format("mc", "mll"))
+    mc_muneg = TFile(var_conf_fmt.format("mc", "muneg"))
+    mc_mupos = TFile(var_conf_fmt.format("mc", "mupos"))
+    mc_no_ip = TFile(var_conf_fmt.format("mc", "noIP"))
+    mc_nvtx_dw = TFile(var_conf_fmt.format("mc", "nvtx_dw"))
+    mc_nvtx_up = TFile(var_conf_fmt.format("mc", "nvtx_up"))
+    mc_ptdw = TFile(var_conf_fmt.format("mc", "ptdw"))
+    mc_ptup = TFile(var_conf_fmt.format("mc", "ptup"))
+    mc_iso_loose_pf = TFile(
+        var_conf_fmt.format("mc", "isoPflowLoose_VarRad"))
+    mc_iso_tight_pf = TFile(
+        var_conf_fmt.format("mc", "isoPflowTight_VarRad"))
+    mc_iso_loose = TFile(
+        var_conf_fmt.format("mc", "isoLoose_VarRad"))
+    mc_iso_tight = TFile(
+        var_conf_fmt.format("mc", "isoTight_VarRad"))
+    mc_files = [
+        mc_nominal, mc_dphill, mc_mll, mc_muneg, mc_mupos,
+        mc_no_ip, mc_nvtx_dw, mc_nvtx_up, mc_ptdw, mc_ptup,
+        mc_iso_loose_pf, mc_iso_tight_pf, mc_iso_loose, mc_iso_tight]
+
     probe_hists = {"data": {}, "mc": {}}
     match_hists = {"data": {}, "mc": {}}
-    # and calculate efficiencies / make histograms
     effs = {"data": {}, "mc": {}}
     hists = {"data": {}, "mc": {}}
 
-    for d_mc in ["data", "mc"]:
+    # Data:
+    for i, var_file in enumerate(data_files):
+        name = c.VARIATIONS[i]
+        probe_hists["data"][name] = var_file.Get(probe_dir + "/" + probe_hist)
+        if not probe_hists["data"][name]:
+            raise ValueError(
+                "Couldn't find {}. Does this really exist in {}?\n".format(
+                    probe_dir + probe_hist, var_file.GetName()))
+        match_hists["data"][name] = var_file.Get(match_dir + "/" + match_hist)
+        if not match_hists["data"][name]:
+            raise ValueError(
+                "Couldn't find {}. Does this really exist in {}?\n".format(
+                    match_dir + match_hist, var_file.GetName()))
+        logging.debug("Got data probe & match hists for %s", name)
 
-        # Creating dictionaries with (histname, hist) tuples
-        # Directories where probe and match hists are located
-        # (identically name in every WTPH output)
-        dir_fmt = "ZmumuTPMerged/"+quality+"MuonProbes_"+\
-            region.capitalize()+"/OC/"+trigger+"/"
-        probe_dir = dir_fmt+"Probe/"
-        match_dir = dir_fmt+"Match/"
+        # Make TEff object to do stat errors properly
+        effs["data"][name] = TEfficiency(
+            match_hists["data"][name], probe_hists["data"][name])
 
-        # Hists to look for in the above directories
-        # (also identically named) in every WTPH output)
-        hist_fmt = str(
-            quality+"MuonProbes_"+region.capitalize()+"_OC_"+
-            trigger+"_{}_etaphi_fine_"+region.capitalize())
-        probe_hist = hist_fmt.format("Probe")
-        match_hist = hist_fmt.format("Match")
+        # Make empty TH2 which will be filled with TEff bin values
+        # (+/- errors if needed) down below
+        hists["data"][name] = probe_hists["data"][name].Clone()
+        hists["data"][name].Reset()
 
-        logging.debug(
-            "Will look in directory,\n"+probe_dir+
-            "\nFor hist,\n"+probe_hist)
-
-        for var in c.VARIATIONS:
-            print(d_mc, var)
-            var_conf_name = d_mc+"20"+str(year)+"_"+"_".join(
-                [period, var, version, trigger_type])+".root"
-            var_conf = os.path.join(input_dir, var_conf_name)
-            if not os.path.exists(var_conf):
-                raise ValueError("File not found:", var_conf)
-            # open file
-            var_file = TFile(var_conf)
-            # get probe hist, raise error if not found
-            probe_branch = os.path.join(probe_dir, probe_hist)
-            probe_hists[d_mc][var] = var_file.Get(probe_branch)
-            print(type(probe_hists["data"]["nominal"]))
-            if not probe_hists[d_mc][var]:
-                raise ValueError(
-                    "Couldn't find {}. Does this really exist in {}?\n".format(
-                        probe_branch, var_file.GetName()))
-            # get match hist, raise error if not found
-            match_branch = os.path.join(match_dir, match_hist)
-            match_hists[d_mc][var] = var_file.Get(match_branch)
-            if not match_hists[d_mc][var]:
-                raise ValueError(
-                    "Couldn't find {}. Does this really exist in {}?\n".format(
-                        match_branch, var_file.GetName()))
-            logging.debug("Got "+d_mc+" probe & match hists for "+var)
-
-            # Make TEff object to do stat errors properly
-            effs[d_mc][var] = TEfficiency(
-                match_hists[d_mc][var], probe_hists[d_mc][var])
-
-            # Make empty TH2 which will be filled with TEff bin values
-            # (+/- errors if needed) down below
-            hists[d_mc][var] = probe_hists[d_mc][var].Clone()
-            hists[d_mc][var].Reset()
-    
     print(type(probe_hists["data"]["nominal"]))
+
+    # MC:
+    for j, mc_varfile in enumerate(mc_files):
+        name = c.VARIATIONS[j]
+        probe_hists["mc"][name] = mc_varfile.Get(probe_dir + "/" + probe_hist)
+        if not probe_hists["mc"][name]:
+            raise ValueError(
+                "Couldn't find {}. Does this really exist in {}?\n".format(
+                    probe_dir + probe_hist, mc_varfile.GetName()))
+        match_hists["mc"][name] = mc_varfile.Get(match_dir + "/" + match_hist)
+        if not match_hists["mc"][name]:
+            raise ValueError(
+                "Couldn't find {}. Does this really exist in {}?\n".format(
+                    match_dir + match_hist, mc_varfile.GetName()))
+        logging.debug("Got MC probe & match hists for %s", name)
+        # Make TEff object to do stat errors properly
+        effs["mc"][name] = TEfficiency(
+            match_hists["mc"][name], probe_hists["mc"][name])
+        #mcEffs[name].SetStatisticOption(TEfficiency.kFNormal)
+        # Make empty TH2 which will be filled with TEff bin values
+        # (+/- errors if needed) down below
+        hists["mc"][name] = probe_hists["mc"][name].Clone()
+        hists["mc"][name].Reset()
 
     # Setting up data systematic, statistical variation histograms
     # for data
