@@ -315,7 +315,7 @@ def main():
         logging.debug("makeSFPlots = True! Will initialize SF hists")
         sf_hists = {}
         for k in hists["data"]:
-            sf_hists[k] = hists[k].Clone()
+            sf_hists[k] = hists["data"][k].Clone()
             sf_hists[k].Reset()
         sf_stat_up = data_stat_up.Clone()
         sf_stat_dw = data_stat_dw.Clone()
@@ -518,7 +518,7 @@ def main():
                     sf_syst_up.SetBinContent(i, j, 0)
                     sf_syst_dw.SetBinContent(i, j, 0)
                 for k in hists["data"]:
-                    sf_hists[k] = hists[k].Clone()
+                    sf_hists[k] = hists["data"][k].Clone()
                     sf_hists[k].Divide(hists["mc"][k])
 
     # If inclusive SF values requested,
@@ -567,9 +567,9 @@ def main():
             region.lower()), TObject.kOverwrite)
         data_stat_dw.Write("eff_etaphi_fine_%s_data_stat_down" % (
             region.lower()), TObject.kOverwrite)
-        for k in sorted(hists.keys()):
+        for k in sorted(hists["data"].keys()):
             if k != "dnominal":
-                hists[k].Write("eff_etaphi_fine_%s_data_%s" % (
+                hists["data"][k].Write("eff_etaphi_fine_%s_data_%s" % (
                     region.lower(), k), TObject.kOverwrite)
         #MC:
         hists["mc"]["nominal"].Write("eff_etaphi_fine_%s_mc_nominal" % (
