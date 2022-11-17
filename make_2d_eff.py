@@ -837,8 +837,8 @@ def run_over_everything():
                             output_dir = DEFAULT_OUT_DIR
                             debug = False
                             make_sf_plots = True
-                            print_sf_values = True
-                            save_pngs = True
+                            print_sf_values = False
+                            save_pngs = False
                             make_2d_eff_hists(
                                 year, period, region, trigger_type, trigger,
                                 quality, version, input_dir, output_dir,
@@ -849,7 +849,7 @@ def run_over_everything():
 def main():
     """Make 2D Efficiency Histograms."""
 
-    run_all = False
+    run_all = True
 
     if run_all:
         run_over_everything()
