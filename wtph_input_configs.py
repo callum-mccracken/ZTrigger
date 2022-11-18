@@ -21,16 +21,16 @@ def replace_16_20():
     Really we should fix CreateInputConfigs,
     but changes get merged so damn slow.
     """
-    input_configs = os.listdir(c.WTPH_INPUT_CONF_DIR)
     for year in c.YEARS:
         for period in RUN_NUMBERS[year]:
             for data_mc in ["data", "mc"]:
                 config = c.WTPH_INPUT_CONF_FMT[data_mc].format(
                     year=year, period=period)
                 config_path = os.path.join(c.WTPH_INPUT_CONF_DIR, config)
-                with open(config_path, "r+") as config_file:
+                with open(config_path, "r") as config_file:
                     text = config_file.read()
-                    text = text.replace("mc16", "mc20")
+                text = text.replace("mc16", "mc20")
+                with open(config_path, "w") as config_file:
                     config_file.write(text)
 
 
@@ -94,6 +94,9 @@ def format_input_configs():
             data_filename = c.WTPH_INPUT_CONF_FMT["data"].format(
                 year=year, period=period)
             data_filepath = os.path.join(c.WTPH_INPUT_CONF_DIR, data_filename)
+            # we will never have files with this exact format auto-generated
+            if os.path.exists(data_filepath):
+                os.remove(data_filepath)
             if data_filename not in input_configs:
                 # try looking for a single file with year_period_
                 data_matches = [
@@ -132,6 +135,9 @@ def format_input_configs():
             mc_filename = c.WTPH_INPUT_CONF_FMT["mc"].format(
                 year=year, period=period)
             mc_filepath = os.path.join(c.WTPH_INPUT_CONF_DIR, mc_filename)
+            # we will never have files with this exact format auto-generated
+            if os.path.exists(mc_filepath):
+                os.remove(mc_filepath)
             if mc_filename not in input_configs:
                 # try looking for a single file with year_period_
                 mc_matches = [
