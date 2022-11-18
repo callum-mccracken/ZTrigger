@@ -15,6 +15,25 @@ def check_formatted():
                 assert c.WTPH_INPUT_CONF_FMT[data_mc].format(
                     year=year, period=period) in input_configs
 
+def replace_16_20():
+    """
+    Replace mc16 with mc20.
+    Really we should fix CreateInputConfigs,
+    but changes get merged so damn slow.
+    """
+    input_configs = os.listdir(c.WTPH_INPUT_CONF_DIR)
+    for year in c.YEARS:
+        for period in RUN_NUMBERS[year]:
+            for data_mc in ["data", "mc"]:
+                config = c.WTPH_INPUT_CONF_FMT[data_mc].format(
+                    year=year, period=period)
+                config_path = os.path.join(c.WTPH_INPUT_CONF_DIR, config)
+                with open(config_path, "r+") as config_file:
+                    text = config_file.read()
+                    text = text.replace("mc16", "mc20")
+                    config_file.write(text)
+
+
 def merge_two(config_path_1, config_path_2, output_path):
     """
     Merge two input config files, e.g. two data files of the same period.
@@ -148,3 +167,5 @@ def format_input_configs():
                     merge(mc_matches, mc_filepath)
 
     check_formatted()
+    replace_16_20()
+

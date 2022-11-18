@@ -59,8 +59,7 @@ import optparse
 import sys
 import os
 import logging
-import itertools
-from ROOT import *
+from ROOT import gROOT, SetAtlasStyle, TCanvas, gStyle, TFile, TEfficiency, TObject
 import constants as c
 from run_numbers import periods
 from triggers import triggers_in_period
@@ -260,8 +259,7 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
     match_hist = hist_fmt.format("Match")
 
     logging.debug(
-        "Will look in directory,\n"+probe_dir+
-        "\nFor hist,\n"+probe_hist)
+        "Will look in directory,\n%s\nFor hist,\n%s", probe_dir, probe_hist)
 
     var_conf_name = "{data_mc}20"+str(year)+"_"+"_".join(
         [period, "{variation}", version, trigger_type])+".root"
@@ -809,9 +807,12 @@ def make_2d_eff_hists(year, period, region, trigger_type, trigger, quality,
             if (k != "nominal" and k != "TotSyst"):
                 placeholder += (sf_val - sf_values["nominal"])**2
                 sf_rounded = round(sf_val, 5)
-                pct_diff = -1 if sf_values["nominal"] == 0 else round((
-                    sf_val - sf_values["nominal"]) / sf_values["nominal"],
-                    5) * 100
+                if sf_values["nominal"] == 0:
+                    pct_diff = -1
+                else:
+                    pct_diff = round(
+                        (sf_val - sf_values["nominal"]) / sf_values["nominal"],
+                        5) * 100
                 print("{:<15} {:<15} {:<15}".format(
                     k, sf_rounded, pct_diff))
         sf_values["TotSyst"] = sf_values["nominal"] + math.sqrt(placeholder)

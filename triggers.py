@@ -40,8 +40,7 @@ def get_ors(trigger_list):
 
 
 TRIGGERS = {
-    # do I need to worry about only using C2-C4 and D3-D6
-    2015: {
+    2015: {  # do I need to worry about only using C2-C4 and D3-D6
         "ANY": {
             "SINGLE": [
                 "HLT_mu20_iloose_L1MU15",
@@ -271,7 +270,6 @@ TRIGGERS = {
             "SINGLE": [
                 "HLT_mu26_ivarmedium",
                 "HLT_mu50",
-                # "HLT_mu26_ivarmedium_OR_HLT_mu50",
                 "HLT_mu60_0eta105_msonly"
             ],
             "MULTI": [
